@@ -1,0 +1,2 @@
+include requirements.txt Readme.md
+include src/yasim_sctcr/_main/sample_data*

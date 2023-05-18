@@ -1,0 +1,5 @@
+/_*/
+!/_static/*
+/activate.sh
+/proc_profiler_*/
+*.ipynb

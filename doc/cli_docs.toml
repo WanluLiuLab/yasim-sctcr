@@ -1,0 +1,6 @@
+names = [
+    "yasim._main",
+    "yasim_scripts._main",
+    "yasim_sc._main",
+    "yasim_sctcr._main"
+]

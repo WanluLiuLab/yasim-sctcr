@@ -1,0 +1,7 @@
+*.json
+trust4*/
+*slrum*
+*.err
+*.out
+times
+

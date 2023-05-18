@@ -1,0 +1,51 @@
+[build-system]
+requires = [
+    "setuptools",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yasim"
+description = "yasim -- Yet Another SIMulator for Alternative Splicing and Differentially Expressed Gene"
+authors = [
+    { name = "YU Zhejian", email = "Zhejian.19@intl.zju.edu.cn" },
+    { name = "SU Yaqi", email = "Yaqi.19@intl.zju.edu.cn" },
+    { name = "YUAN Ruihong", email = "Ruihong.19@intl.zju.edu.cn" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: R",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Utilities"
+]
+requires-python = ">=3.7"
+dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
+
+[tool.setuptools]
+license-files = ["License.md", "Copying.md"]
+
+[tool.setuptools.dynamic]
+version = { attr = "yasim.__version__" }
+readme = { file = "Readme.md" }
+dependencies = { file = "requirements.txt" }
+
+[tool.setuptools.dynamic.optional-dependencies]
+pbsim3 =  { file = "requirements_pbsim3.txt" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
