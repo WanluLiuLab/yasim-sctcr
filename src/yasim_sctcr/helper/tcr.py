@@ -345,17 +345,17 @@ class TCell:
 
     def to_nt_fasta_record(self) -> str:
         return "\n".join((
-            f">{self._cell_barcode}:A",
+            f">{self._cell_barcode}_A",
             self.alpha_nt,
-            f">{self._cell_barcode}:B",
+            f">{self._cell_barcode}_B",
             self.beta_nt
         ))
 
     def to_aa_fasta_record(self) -> str:
         return "\n".join((
-            f">{self._cell_barcode}:A",
+            f">{self._cell_barcode}_A",
             self.alpha_aa,
-            f">{self._cell_barcode}:B",
+            f">{self._cell_barcode}_B",
             self.beta_aa
         ))
 

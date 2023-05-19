@@ -10,7 +10,7 @@ __all__ = (
 import argparse
 from labw_utils.typing_importer import List
 
-from labw_utils.commonutils.io.tqdm_reader import get_tqdm_line_reader
+from labw_utils.commonutils.lwio.tqdm_reader import get_tqdm_line_reader
 from labw_utils.commonutils.stdlib_helper.argparse_helper import ArgumentParserWithEnhancedFormatHelp
 from yasim.helper.depth_io import write_depth
 from yasim.helper.frontend import patch_frontend_argument_parser
@@ -47,8 +47,8 @@ def main(args: List[str]) -> int:
     args = create_parser().parse_args(args)
     depth_db = {}
     for barcode in get_tqdm_line_reader(args.barcodes):
-        depth_db[f"{barcode}:A"] = args.depth
-        depth_db[f"{barcode}:B"] = args.depth
+        depth_db[f"{barcode}_A"] = args.depth
+        depth_db[f"{barcode}_B"] = args.depth
 
     write_depth(depth_db, args.out, "TRANSCRIPT_ID")
     return 0

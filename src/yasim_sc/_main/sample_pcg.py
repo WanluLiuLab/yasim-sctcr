@@ -90,7 +90,7 @@ def main(args: List[str]):
             GtfIteratorWriter(args.out) as gtfw:
         for gtf_record in gtfi:
             nr += 1
-            gene_id = gtf_record.attribute.get(args.gene_name_attribute)
+            gene_id = gtf_record.attribute_get(args.gene_name_attribute)
             if (
                     not gene_id.startswith("TR")
                     and gene_id in gene_names

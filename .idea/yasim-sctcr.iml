@@ -21,6 +21,7 @@
       <excludeFolder url="file://$MODULE_DIR$/suppl_data_analysis/trn_tcr_simulation/sim_tcr_50.d" />
       <excludeFolder url="file://$MODULE_DIR$/suppl_data_analysis/trn_tcr_simulation/trust4_index" />
       <excludeFolder url="file://$MODULE_DIR$/suppl_data_analysis/trn_tcr_simulation/trust4_result" />
+      <excludeFolder url="file://$MODULE_DIR$/suppl_data_analysis/trn_tcr_simulation/sim_tcr.nt.fa.d" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

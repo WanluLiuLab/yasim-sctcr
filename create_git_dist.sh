@@ -5,12 +5,13 @@ cd "${SHDIR}/" || exit 1
 rm -rf "${SHDIR}/git_dist"
 mkdir -p "${SHDIR}/git_dist"
 
-git clone --mirror "$(git remote get-url origin)" "${SHDIR}/git_dist/yasim.git"
+git clone --mirror "$(git remote get-url origin)" "${SHDIR}/git_dist/yasim-sctcr.git"
 
-cd "${SHDIR}/deps/labw_utils" || exit 1
-git clone --mirror "$(git remote get-url origin)" "${SHDIR}/git_dist/labw_utils.git"
+for dist in labw_utils yasim; do
+    cd "${SHDIR}/deps/${dist}" || exit 1
+    git clone --mirror "$(git remote get-url origin)" "${SHDIR}/git_dist/${dist}.git"
+    cd "${SHDIR}/" || exit 1
+done
 
-cd "${SHDIR}/" || exit 1
-
-tar cvf "${SHDIR}/git_dist.tar" "${SHDIR}/git_dist"
-rm -rf "${SHDIR}/git_dist"
+tar cvf git_dist.tar git_dist
+rm -rf "git_dist"

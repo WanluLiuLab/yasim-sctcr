@@ -6,7 +6,7 @@ axel https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz
 gunzip ./*.gz
 grep -e '^chr7\s' -e '^chr14\s' hg38.ncbiRefSeq.gtf >hg38.ncbiRefSeq_chr7_14.gtf
 
-python -m yasim_sc generate_barcode -n 10000 -o barcode.txt
+python -m yasim_sc generate_barcode -n 10 -o barcode.txt
 
 # TCR
 python -m yasim_sctcr generate_tcr_depth \
@@ -21,10 +21,10 @@ python -m yasim_sctcr generate_tcr_cache \
     -g hg38.ncbiRefSeq_chr7_14.gtf
 rm -rf sim_tcr.fa.d sim_tcr.d sim_tcr.json.d
 python -m yasim_sctcr rearrange_tcr \
-    --tcr_genelist_path tcr_genelist.json \
-    --tcr_cache_path tcr_cache.json \
-    --cdr3_deletion_table_path cdr3_deletion_table.json \
-    --cdr3_insertion_table_path cdr3_insertion_table.json \
+    --tcr_genelist_path data/tcr_genelist.json \
+    --tcr_cache_path data/tcr_cache.json \
+    --cdr3_deletion_table_path data/cdr3_deletion_table.json \
+    --cdr3_insertion_table_path data/cdr3_insertion_table.json \
     -b barcode.txt \
     -o sim_tcr
 python -m labw_utils.bioutils split_fasta sim_tcr.nt.fa
@@ -63,11 +63,11 @@ python -m yasim art \
 # See: sim_tcr.d
 
 # Gene
-python -m yasim_scripts sample_pcg \
-    -i ncbi_dataset.tsv \
+python -m yasim_sc sample_pcg \
+    -i data/ncbi_dataset.tsv \
     -g hg38.ncbiRefSeq.gtf \
     -o hg38.ncbiRefSeq_subsampled.gtf \
-    --num_genes_to_sample 100
+    --num_genes_to_sample 20
 python -m yasim generate_gene_depth \
     -g hg38.ncbiRefSeq_subsampled.gtf \
     -d 5 \
@@ -81,7 +81,7 @@ python -m yasim_sc generate_barcoded_isoform_replicates \
     -b barcode.txt \
     -o notcr_isoform_depth_sc.d
 rm -fr notcr_trans.fa.d
-python -m yasim transcribe \
+python -m labw_utils.bioutils transcribe \
     -f hg38.fa \
     -g hg38.ncbiRefSeq_subsampled.gtf \
     -o notcr_trans.fa
