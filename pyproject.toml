@@ -1,3 +1,4 @@
+# TODO: Unchecked, unfinished!
 [build-system]
 requires = [
     "setuptools",
@@ -5,12 +6,12 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "yasim"
-description = "yasim -- Yet Another SIMulator for Alternative Splicing and Differentially Expressed Gene"
+name = "yasim_sctcr"
+description = "yasim_sctcr -- Yet Another SIMulator for Single-Cell T-Cell Receptor Sequencing (scTCR-Seq)"
 authors = [
     { name = "YU Zhejian", email = "Zhejian.19@intl.zju.edu.cn" },
-    { name = "SU Yaqi", email = "Yaqi.19@intl.zju.edu.cn" },
-    { name = "YUAN Ruihong", email = "Ruihong.19@intl.zju.edu.cn" },
+    { name = "TIAN Ruonan", email = "Yaqi.19@intl.zju.edu.cn" },
+    { name = "LIU Wanlu (Correspondence)", email = "wanluliu@intl.zju.edu.cn" }
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
