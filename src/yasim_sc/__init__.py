@@ -7,6 +7,8 @@ and make LLRGs work in parallel.
 It cannot simulate 10x Genomics data.
 
 It is recommended for users to provide their own count matrix.
+
+.. versionadded:: 0.1.0
 """
 
 description = __doc__.splitlines()[1]

@@ -1,5 +1,7 @@
 """
 generate_barcode.py -- Generate barcodes with give length and number.
+
+.. versionadded:: 0.1.0
 """
 
 __all__ = (
@@ -20,6 +22,11 @@ logger = get_logger(__name__)
 
 
 def create_parser() -> argparse.ArgumentParser:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     parser = ArgumentParserWithEnhancedFormatHelp(prog="python -m yasim_sc generate_barcode", description=__doc__.splitlines()[1])
     parser.add_argument(
         '-n',
@@ -52,6 +59,11 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def generate(barcode_length: int) -> str:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     _generated_barcodes = set()
     while True:
         new_barcode = "".join(map(lambda _: random.choice("ATCG"), range(barcode_length)))
@@ -61,6 +73,11 @@ def generate(barcode_length: int) -> str:
 
 
 def main(args: List[str]):
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     args = create_parser().parse_args(args)
     with get_writer(args.out) as writer:
         for _ in tqdm(range(args.num_cells), desc="Generating"):

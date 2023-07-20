@@ -1,5 +1,7 @@
 """
 rearrange_tcr.py -- Generate ground-truth TCR Contigs
+
+.. versionadded:: 0.1.0
 """
 __all__ = (
     "main",
@@ -24,6 +26,11 @@ _lh = get_logger(__name__)
 
 
 def create_parser() -> argparse.ArgumentParser:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     parser = ArgumentParserWithEnhancedFormatHelp(
         prog="python -m yasim_sctcr rearrange_tcr",
         description=__doc__.splitlines()[1]
@@ -74,6 +81,11 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def main(args: List[str]):
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     args = create_parser().parse_args(args)
     rearrange_tcr(
         output_base_path=args.out,
@@ -93,6 +105,11 @@ def rearrange_tcr(
         cdr3_deletion_table_path: str,
         cdr3_insertion_table_path: str
 ):
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     n_failure = 0
     with get_reader(tcr_genelist_path) as reader:
         tcr_genelist = json.load(reader)

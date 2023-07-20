@@ -1,5 +1,7 @@
 """
 generate_tcr_cache.py -- Generation of TCR Cache.
+
+.. versionadded:: 0.1.0
 """
 
 __all__ = (
@@ -27,6 +29,11 @@ _lh = get_logger(__name__)
 
 
 def create_parser() -> argparse.ArgumentParser:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     parser = ArgumentParserWithEnhancedFormatHelp(
         prog="python -m yasim_sctcr generate_tcr_cache",
         description=__doc__.splitlines()[1]
@@ -76,6 +83,11 @@ def create_tcr_cache(
         tcr_aa_table_path: str,
         tcr_cache_path: str
 ):
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     with get_reader(tcr_genelist_path) as reader:
         tcr_genelist = json.load(reader)
     with get_reader(tcr_aa_table_path) as reader:
@@ -138,6 +150,11 @@ def create_tcr_cache(
 
 
 def main(args: List[str]) -> int:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     args = create_parser().parse_args(args)
     create_tcr_cache(
         ref_fa_path=args.fasta,

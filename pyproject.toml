@@ -1,4 +1,3 @@
-# TODO: Unchecked, unfinished!
 [build-system]
 requires = [
     "setuptools",
@@ -10,7 +9,7 @@ name = "yasim_sctcr"
 description = "yasim_sctcr -- Yet Another SIMulator for Single-Cell T-Cell Receptor Sequencing (scTCR-Seq)"
 authors = [
     { name = "YU Zhejian", email = "Zhejian.19@intl.zju.edu.cn" },
-    { name = "TIAN Ruonan", email = "Yaqi.19@intl.zju.edu.cn" },
+    { name = "TIAN Ruonan", email = "Ruonan.21@intl.zju.edu.cn" },
     { name = "LIU Wanlu (Correspondence)", email = "wanluliu@intl.zju.edu.cn" }
 ]
 classifiers = [
@@ -39,6 +38,8 @@ dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
 
 [tool.setuptools]
 license-files = ["License.md", "Copying.md"]
+
+# TODO: URLs
 
 [tool.setuptools.dynamic]
 version = { attr = "yasim.__version__" }

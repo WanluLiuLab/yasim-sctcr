@@ -1,3 +1,8 @@
+"""
+TODO: docs
+
+.. versionadded:: 0.1.0
+"""
 __all__ = (
     "get_sample_data_path",
 )
@@ -9,4 +14,9 @@ _SAMPLE_DATA_PATH = os.path.join(_DIR_PATH, "sample_data")
 
 
 def get_sample_data_path(name: str) -> str:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     return os.path.join(_SAMPLE_DATA_PATH, name)

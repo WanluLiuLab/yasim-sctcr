@@ -1,5 +1,7 @@
 """
 generate_tcr_depth.py -- Generate scTCR depth TSV without clonal expansion
+
+.. versionadded:: 0.1.0
 """
 
 __all__ = (
@@ -17,6 +19,11 @@ from yasim.helper.frontend import patch_frontend_argument_parser
 
 
 def create_parser() -> argparse.ArgumentParser:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     parser = ArgumentParserWithEnhancedFormatHelp(
         prog="python -m yasim_sctcr generate_tcr_depth",
         description=__doc__.splitlines()[1]
@@ -44,6 +51,11 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def main(args: List[str]) -> int:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     args = create_parser().parse_args(args)
     depth_db = {}
     for barcode in get_tqdm_line_reader(args.barcodes):

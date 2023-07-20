@@ -1,5 +1,7 @@
 """
 art.py -- Single-Cell LLRG adapter for ART, a NGS DNA-Seq simulator
+
+.. versionadded:: 0.1.0
 """
 
 __all__ = (
@@ -13,13 +15,19 @@ from labw_utils.typing_importer import List
 from labw_utils.commonutils.stdlib_helper.argparse_helper import ArgumentParserWithEnhancedFormatHelp
 from labw_utils.commonutils.stdlib_helper.logger_helper import get_logger
 from yasim.helper import llrg
-from yasim.helper.rna_seq import sc_rna_seq_frontend
 from yasim.llrg_adapter import art
+
+from yasim_sc.helper.rna_seq import sc_rna_seq_frontend
 
 _lh = get_logger(__name__)
 
 
 def create_parser() -> argparse.ArgumentParser:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     parser = ArgumentParserWithEnhancedFormatHelp(prog="python -m yasim_sc art", description=__doc__.splitlines()[1])
     parser = llrg.patch_frontend_parser_public(
         parser,
@@ -32,6 +40,11 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def main(args: List[str]) -> int:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     args, other_args = create_parser().parse_known_args(args)
 
     return sc_rna_seq_frontend(
@@ -46,7 +59,8 @@ def main(args: List[str]) -> int:
             "read_length": args.read_length,
             "pair_end_fragment_length_mean": args.pair_end_fragment_length_mean,
             "pair_end_fragment_length_std": args.pair_end_fragment_length_std,
-            "is_pair_end": args.is_pair_end
+            "is_pair_end": args.is_pair_end,
+            "preserve_intermediate_files": args.preserve_intermediate_files
         },
         assembler_args={},
         adapter_class=art.ArtAdapter,

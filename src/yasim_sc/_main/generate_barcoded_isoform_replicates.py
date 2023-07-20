@@ -1,5 +1,7 @@
 """
 generate_barcoded_isoform_replicates.py -- Generate Technical Replicates using YASIM V3 API with barcodes.
+
+.. versionadded:: 0.1.0
 """
 
 __all__ = (
@@ -18,6 +20,11 @@ from yasim.helper.frontend import patch_frontend_argument_parser
 
 
 def create_parser() -> argparse.ArgumentParser:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     parser = ArgumentParserWithEnhancedFormatHelp(
         prog="python -m yasim_sc generate_barcoded_isoform_replicates",
         description=__doc__.splitlines()[1]
@@ -47,6 +54,11 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def main(args: List[str]):
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
     args = create_parser().parse_args(args)
     depth_data = depth_io.read_depth(args.depth)
     for barcode in get_tqdm_line_reader(args.barcodes):
