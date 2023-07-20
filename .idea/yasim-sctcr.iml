@@ -4,9 +4,22 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/deps/labw_utils/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/deps/yasim/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/deps/labw_utils" />
       <excludeFolder url="file://$MODULE_DIR$/deps/yasim" />
       <excludeFolder url="file://$MODULE_DIR$/suppl_data_analysis/trn_tcr_simulation/data" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/sonarlint" />
+      <excludeFolder url="file://$MODULE_DIR$/.mypy_cache" />
+      <excludeFolder url="file://$MODULE_DIR$/.vscode" />
+      <excludeFolder url="file://$MODULE_DIR$/pending/doc/_build" />
+      <excludeFolder url="file://$MODULE_DIR$/pending/doc/_cli_docs" />
+      <excludeFolder url="file://$MODULE_DIR$/pending/doc/_root" />
+      <excludeFolder url="file://$MODULE_DIR$/test/notcr_isoform_depth_sc.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/notcr_trans.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_notcr_50.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr.json.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr_50.d" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
