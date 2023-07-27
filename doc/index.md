@@ -9,7 +9,7 @@ This contains documentation for YASIM Users.
 
 _root/Readme
 _cli_docs/index
-src/tutorial_sctcr/index.ipynb.md
+src/tutorial/index
 _root/Copying
 src/license/index
 ```

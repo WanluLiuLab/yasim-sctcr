@@ -20,6 +20,9 @@
       <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr.json.d" />
       <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr.nt.fa.d" />
       <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr_50.d" />
+      <excludeFolder url="file://$MODULE_DIR$/doc/_build" />
+      <excludeFolder url="file://$MODULE_DIR$/doc/_cli_docs" />
+      <excludeFolder url="file://$MODULE_DIR$/doc/_root" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

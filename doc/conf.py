@@ -70,12 +70,6 @@ autodoc_default_options = {
     'special-members': '__init__',
 }
 
-# Intersphinx settings
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.8', None),
-    'joblib': ('https://joblib.readthedocs.io/en/latest', None),
-}
-
 # myst-nb settings
 nb_execution_timeout = 1200
 nb_execution_mode = "cache"

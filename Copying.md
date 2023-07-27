@@ -1,4 +1,4 @@
-# Copyright Information of This Project
+# Copyright
 
 This project uses MIT License, a copy of which is available at <License.md>.
 

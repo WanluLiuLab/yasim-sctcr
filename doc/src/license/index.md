@@ -1,5 +1,4 @@
-# Licenses used by Third-Party Software that is Used in YASIM
-
+# Licence
 
 ```{toctree}
 :caption: 'Contents:'
