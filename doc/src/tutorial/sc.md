@@ -15,12 +15,15 @@ Here would list version information of each component used in this tutorial for 
 
 | Software     | Version   |
 |--------------|-----------|
-| GNU Bash     | 5.2.15(1) |
-| GNU Grep     | 3.8       |
-| GNU Wget     | 1.21.3    |
-| yasim        | 3.1.5     |
+| [GNU Bash](https://www.gnu.org/software/bash)     | 5.2.15(1) |
+| [GNU Grep](https://www.gnu.org/software/grep)     | 3.8       |
+| [GNU Wget](https://www.gnu.org/software/wget)     | 1.21.3    |
+| [yasim](https://pypi.org/project/yasim/)        | 3.1.5     |
 | yasim\_sctcr | 0.1.0     |
-| art_illumina | 2.5.8     |
+| [art\_illumina](https://www.niehs.nih.gov/research/resources/software/biostatistics/art/index.cfm) | 2.5.8     |
+| [samtools](https://www.htslib.org)     | 1.17      |
+
+Make sure you had correctly set up the environment as-is specified in {doc}`Readme </_root/Readme>`.
 
 ## Step 0. Preparation
 
