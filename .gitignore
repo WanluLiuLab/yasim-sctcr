@@ -471,3 +471,4 @@ makefile_test_data/
 syq_article_simulation2
 !requirements_*.txt
 !workflow.svg
+/twine.pypirc.ini

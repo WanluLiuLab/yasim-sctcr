@@ -28,26 +28,25 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: R",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Utilities"
 ]
 requires-python = ">=3.7"
 dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
 
+[project.urls]
+Source = "https://github.com/WanluLiuLab/yasim-sctcr"
+# Documentation = "https://labw.org/yasim-docs/"
+
 [tool.setuptools]
 license-files = ["License.md", "Copying.md"]
 
-# TODO: URLs
-
 [tool.setuptools.dynamic]
-version = { attr = "yasim.__version__" }
-readme = { file = "Readme.md" }
+version = { attr = "yasim_sctcr.__version__" }
+readme = { file = "Readme.md" , content-type = "text/markdown"}
 dependencies = { file = "requirements.txt" }
-
-[tool.setuptools.dynamic.optional-dependencies]
-pbsim3 =  { file = "requirements_pbsim3.txt" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
