@@ -10,7 +10,7 @@ import tomli
 from docutils.parsers.null import Parser as NullParser
 from sphinx.application import Sphinx
 
-import yasim
+import yasim_sctcr
 
 
 def setup(app: Sphinx):
@@ -29,7 +29,7 @@ with open(os.path.join(ROOT_DIR, "pyproject.toml"), "rb") as reader:
 project = parsed_pyproject["project"]["name"]
 author = "&".join([author["name"] for author in parsed_pyproject["project"]["authors"]])
 copyright_string = f'2022-2023, {author}'
-release = yasim.__version__
+release = yasim_sctcr.__version__
 
 # -- General configuration ---------------------------------------------------
 

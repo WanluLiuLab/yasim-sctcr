@@ -38,7 +38,7 @@ dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
 
 [project.urls]
 Source = "https://github.com/WanluLiuLab/yasim-sctcr"
-# Documentation = "https://labw.org/yasim-docs/"
+Documentation = "https://labw.org/yasim-sctcr-docs/"
 
 [tool.setuptools]
 license-files = ["License.md", "Copying.md"]

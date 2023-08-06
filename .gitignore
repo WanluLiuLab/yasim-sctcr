@@ -472,3 +472,4 @@ syq_article_simulation2
 !requirements_*.txt
 !workflow.svg
 /twine.pypirc.ini
+!requirements.txt
