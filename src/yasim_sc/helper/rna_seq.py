@@ -3,6 +3,7 @@ TODO: docs
 
 .. versionadded:: 0.1.0
 """
+
 import glob
 import os
 from collections import defaultdict
@@ -18,17 +19,17 @@ _lh = get_logger(__name__)
 
 
 def sc_rna_seq_frontend(
-        transcriptome_fasta_dir: str,
-        output_fastq_dir_path: str,
-        depth_dir_path: str,
-        jobs: int,
-        simulator_name: str,
-        adapter_args: Mapping[str, Any],
-        assembler_args: Mapping[str, Any],
-        adapter_class: Type[BaseLLRGAdapter],
-        is_pair_end: bool,
-        llrg_executable_path: Optional[str] = None,
-        not_perform_assemble: bool = False
+    transcriptome_fasta_dir: str,
+    output_fastq_dir_path: str,
+    depth_dir_path: str,
+    jobs: int,
+    simulator_name: str,
+    adapter_args: Mapping[str, Any],
+    assembler_args: Mapping[str, Any],
+    adapter_class: Type[BaseLLRGAdapter],
+    is_pair_end: bool,
+    llrg_executable_path: Optional[str] = None,
+    not_perform_assemble: bool = False,
 ) -> int:
     """
     :return: Exit Value
@@ -36,9 +37,7 @@ def sc_rna_seq_frontend(
     .. versionadded:: 3.1.5
     """
     adapter_args = validate_adapter_args(
-        adapter_args=adapter_args,
-        adapter_class=adapter_class,
-        llrg_executable_path=llrg_executable_path
+        adapter_args=adapter_args, adapter_class=adapter_class, llrg_executable_path=llrg_executable_path
     )
 
     barcode_depth_data_dict: Dict[str, DepthType] = {}
@@ -68,7 +67,7 @@ def sc_rna_seq_frontend(
             is_pair_end=is_pair_end,
             llrg_executable_path=llrg_executable_path,
             not_perform_assemble=not_perform_assemble,
-            show_tqdm=False
+            show_tqdm=False,
         )
         for k, v in exception_dict.items():
             full_exception_dict[k] += v

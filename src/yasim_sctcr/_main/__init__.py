@@ -3,9 +3,8 @@ TODO: docs
 
 .. versionadded:: 0.1.0
 """
-__all__ = (
-    "get_sample_data_path",
-)
+
+__all__ = ("get_sample_data_path",)
 
 import os
 

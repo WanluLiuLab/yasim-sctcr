@@ -4,10 +4,7 @@ generate_tcr_depth.py -- Generate scTCR depth TSV without clonal expansion
 .. versionadded:: 0.1.0
 """
 
-__all__ = (
-    "main",
-    "create_parser"
-)
+__all__ = ("main", "create_parser")
 
 import argparse
 from labw_utils.typing_importer import List
@@ -25,28 +22,13 @@ def create_parser() -> argparse.ArgumentParser:
     .. versionadded:: 0.1.0
     """
     parser = ArgumentParserWithEnhancedFormatHelp(
-        prog="python -m yasim_sctcr generate_tcr_depth",
-        description=__doc__.splitlines()[1]
+        prog="python -m yasim_sctcr generate_tcr_depth", description=__doc__.splitlines()[1]
     )
     parser = patch_frontend_argument_parser(parser, "-b")
     parser.add_argument(
-        '-o',
-        '--out',
-        required=True,
-        help="Path to output depth TSV",
-        nargs='?',
-        type=str,
-        action='store'
+        "-o", "--out", required=True, help="Path to output depth TSV", nargs="?", type=str, action="store"
     )
-    parser.add_argument(
-        '-d',
-        '--depth',
-        required=True,
-        help="Simulated depth",
-        nargs='?',
-        type=int,
-        action='store'
-    )
+    parser.add_argument("-d", "--depth", required=True, help="Simulated depth", nargs="?", type=int, action="store")
     return parser
 
 

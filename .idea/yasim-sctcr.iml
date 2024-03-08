@@ -25,6 +25,16 @@
       <excludeFolder url="file://$MODULE_DIR$/doc/_root" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/src/yasim_sctcr.egg-info" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/test/IMGT_V-QUEST_reference_directory" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/pq" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/test/blastdb" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/test/ncbi-igblast-1.22.0" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/test/out4msa.aa.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/test/out4msa.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/test/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/test/refseq" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/sim_tcr.json.d" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

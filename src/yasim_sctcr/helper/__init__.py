@@ -1,6 +1,4 @@
-__all__ = (
-    "get_sample_data_path",
-)
+__all__ = ("get_sample_data_path",)
 
 import os
 

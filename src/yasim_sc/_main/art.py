@@ -4,10 +4,7 @@ art.py -- Single-Cell LLRG adapter for ART, a NGS DNA-Seq simulator
 .. versionadded:: 0.1.0
 """
 
-__all__ = (
-    "main",
-    "create_parser"
-)
+__all__ = ("main", "create_parser")
 
 import argparse
 from labw_utils.typing_importer import List
@@ -29,11 +26,7 @@ def create_parser() -> argparse.ArgumentParser:
     .. versionadded:: 0.1.0
     """
     parser = ArgumentParserWithEnhancedFormatHelp(prog="python -m yasim_sc art", description=__doc__.splitlines()[1])
-    parser = llrg.patch_frontend_parser_public(
-        parser,
-        llrg_name="art",
-        default_llrg_executable_name="art_illumina"
-    )
+    parser = llrg.patch_frontend_parser_public(parser, llrg_name="art", default_llrg_executable_name="art_illumina")
     parser = llrg.patch_frontend_parser_sc_rna_seq(parser)
     parser = art.patch_frontend_parser(parser)
     return parser
@@ -60,11 +53,11 @@ def main(args: List[str]) -> int:
             "pair_end_fragment_length_mean": args.pair_end_fragment_length_mean,
             "pair_end_fragment_length_std": args.pair_end_fragment_length_std,
             "is_pair_end": args.is_pair_end,
-            "preserve_intermediate_files": args.preserve_intermediate_files
+            "preserve_intermediate_files": args.preserve_intermediate_files,
         },
         assembler_args={},
         adapter_class=art.ArtAdapter,
         is_pair_end=args.is_pair_end,
         llrg_executable_path=args.llrg_executable_path,
-        not_perform_assemble=False
+        not_perform_assemble=False,
     )

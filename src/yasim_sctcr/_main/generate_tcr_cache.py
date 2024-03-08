@@ -4,10 +4,7 @@ generate_tcr_cache.py -- Generation of TCR Cache.
 .. versionadded:: 0.1.0
 """
 
-__all__ = (
-    "main",
-    "create_parser"
-)
+__all__ = ("main", "create_parser")
 
 import argparse
 import itertools
@@ -35,53 +32,34 @@ def create_parser() -> argparse.ArgumentParser:
     .. versionadded:: 0.1.0
     """
     parser = ArgumentParserWithEnhancedFormatHelp(
-        prog="python -m yasim_sctcr generate_tcr_cache",
-        description=__doc__.splitlines()[1]
+        prog="python -m yasim_sctcr generate_tcr_cache", description=__doc__.splitlines()[1]
     )
     parser.add_argument(
-        '--tcr_genelist_path',
+        "--tcr_genelist_path",
         required=True,
         help=f"TCR Gene List JSON. The IMGT version for human is {get_sample_data_path('tcr_gene_list.min.json')}",
-        nargs='?',
+        nargs="?",
         type=str,
-        action='store'
+        action="store",
     )
     parser = patch_frontend_argument_parser(parser, "-f")
     parser.add_argument(
-        '-g',
-        '--gtf',
-        required=True,
-        help="Path to reference genome GTF",
-        nargs='?',
-        type=str,
-        action='store'
+        "-g", "--gtf", required=True, help="Path to reference genome GTF", nargs="?", type=str, action="store"
     )
     parser.add_argument(
-        '--tcr_aa_table_path',
+        "--tcr_aa_table_path",
         required=True,
         help=f"TCR AA Table Path. The IMGT version for human is {get_sample_data_path('tcr_aa_table.min.json')}",
-        nargs='?',
+        nargs="?",
         type=str,
-        action='store'
+        action="store",
     )
-    parser.add_argument(
-        '-o',
-        '--out',
-        required=True,
-        help="Output TCR Cache",
-        nargs='?',
-        type=str,
-        action='store'
-    )
+    parser.add_argument("-o", "--out", required=True, help="Output TCR Cache", nargs="?", type=str, action="store")
     return parser
 
 
 def create_tcr_cache(
-        ref_fa_path: str,
-        ref_gtf_path: str,
-        tcr_genelist_path: str,
-        tcr_aa_table_path: str,
-        tcr_cache_path: str
+    ref_fa_path: str, ref_gtf_path: str, tcr_genelist_path: str, tcr_aa_table_path: str, tcr_cache_path: str
 ):
     """
     TODO: docs
@@ -92,17 +70,10 @@ def create_tcr_cache(
         tcr_genelist = json.load(reader)
     with get_reader(tcr_aa_table_path) as reader:
         tcr_aa_table = json.load(reader)
-    ref_fasta_view = FastaViewFactory(
-        ref_fa_path,
-        show_tqdm=True,
-        read_into_memory=False
-    )
+    ref_fasta_view = FastaViewFactory(ref_fa_path, show_tqdm=True, read_into_memory=False)
     ref_gene_view = GeneViewFactory.from_file(ref_gtf_path)
     tcrs = {}
-    for gene_name in tqdm(
-            list(itertools.chain(*tcr_genelist.values())),
-            desc="Generating TCR Cache"
-    ):
+    for gene_name in tqdm(list(itertools.chain(*tcr_genelist.values())), desc="Generating TCR Cache"):
         try:
             gene = ref_gene_view.get_gene(gene_name)
         except KeyError:
@@ -118,23 +89,17 @@ def create_tcr_cache(
                 "Gene %s have %d != 1 valid transcript (%s)!",
                 gene_name,
                 len(valid_transcript),
-                str(list(map(lambda x: x.transcript_id, valid_transcript)))
+                str(list(map(lambda x: x.transcript_id, valid_transcript))),
             )
             continue
         real_nt_seq = valid_transcript[0].cdna_sequence(ref_fasta_view.sequence)
         if real_nt_seq == "":
-            _lh.warning(
-                "Gene %s have no NT sequence!",
-                gene_name
-            )
+            _lh.warning("Gene %s have no NT sequence!", gene_name)
             continue
         try:
             real_aa_seq = tcr_aa_table[gene_name]
         except KeyError:
-            _lh.warning(
-                "Gene %s have no AA sequence!",
-                gene_name
-            )
+            _lh.warning("Gene %s have no AA sequence!", gene_name)
             continue
         tcrs[gene_name] = align(ref_nt_seq=real_nt_seq, imgt_aa_seq=real_aa_seq)
     with get_writer(tcr_cache_path) as writer:
@@ -161,6 +126,6 @@ def main(args: List[str]) -> int:
         ref_gtf_path=args.gtf,
         tcr_genelist_path=args.tcr_genelist_path,
         tcr_aa_table_path=args.tcr_aa_table_path,
-        tcr_cache_path=args.out
+        tcr_cache_path=args.out,
     )
     return 0

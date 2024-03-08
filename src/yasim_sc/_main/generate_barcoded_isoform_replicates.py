@@ -4,10 +4,7 @@ generate_barcoded_isoform_replicates.py -- Generate Technical Replicates using Y
 .. versionadded:: 0.1.0
 """
 
-__all__ = (
-    "main",
-    "create_parser"
-)
+__all__ = ("main", "create_parser")
 
 import argparse
 import os
@@ -26,29 +23,22 @@ def create_parser() -> argparse.ArgumentParser:
     .. versionadded:: 0.1.0
     """
     parser = ArgumentParserWithEnhancedFormatHelp(
-        prog="python -m yasim_sc generate_barcoded_isoform_replicates",
-        description=__doc__.splitlines()[1]
+        prog="python -m yasim_sc generate_barcoded_isoform_replicates", description=__doc__.splitlines()[1]
     )
     parser = patch_frontend_argument_parser(parser, "-d")
     parser = patch_frontend_argument_parser(parser, "-b")
     parser.add_argument(
-        '-r',
-        '--range',
+        "-r",
+        "--range",
         required=False,
         help="Range of Generated Data",
-        nargs='?',
+        nargs="?",
         type=float,
-        action='store',
-        default=0.1
+        action="store",
+        default=0.1,
     )
     parser.add_argument(
-        '-o',
-        '--dest_dir_path',
-        required=True,
-        help="Path of output directory",
-        nargs='?',
-        type=str,
-        action='store'
+        "-o", "--dest_dir_path", required=True, help="Path of output directory", nargs="?", type=str, action="store"
     )
     return parser
 
@@ -63,11 +53,8 @@ def main(args: List[str]):
     depth_data = depth_io.read_depth(args.depth)
     for barcode in get_tqdm_line_reader(args.barcodes):
         depth_io.write_depth(
-            depth.generate_depth_replicates_uniform(
-                depth_data,
-                args.range
-            ),
+            depth.generate_depth_replicates_uniform(depth_data, args.range),
             os.path.join(args.dest_dir_path, f"{barcode}.tsv"),
             "TRANSCRIPT_ID",
-            show_tqdm=False
+            show_tqdm=False,
         )

@@ -4,10 +4,7 @@ generate_barcode.py -- Generate barcodes with give length and number.
 .. versionadded:: 0.1.0
 """
 
-__all__ = (
-    "create_parser",
-    "main"
-)
+__all__ = ("create_parser", "main")
 
 import argparse
 import random
@@ -27,33 +24,15 @@ def create_parser() -> argparse.ArgumentParser:
 
     .. versionadded:: 0.1.0
     """
-    parser = ArgumentParserWithEnhancedFormatHelp(prog="python -m yasim_sc generate_barcode", description=__doc__.splitlines()[1])
+    parser = ArgumentParserWithEnhancedFormatHelp(
+        prog="python -m yasim_sc generate_barcode", description=__doc__.splitlines()[1]
+    )
+    parser.add_argument("-n", "--num_cells", required=True, help="Number of Cells", nargs="?", type=int, action="store")
     parser.add_argument(
-        '-n',
-        '--num_cells',
-        required=True,
-        help="Number of Cells",
-        nargs='?',
-        type=int,
-        action='store'
+        "-l", "--length", required=False, default=17, help="Length of barcode", nargs="?", type=int, action="store"
     )
     parser.add_argument(
-        '-l', '--length',
-        required=False,
-        default=17,
-        help="Length of barcode",
-        nargs='?',
-        type=int,
-        action='store'
-    )
-    parser.add_argument(
-        '-o',
-        '--out',
-        required=True,
-        help="Output path to barcode TXT",
-        nargs='?',
-        type=str,
-        action='store'
+        "-o", "--out", required=True, help="Output path to barcode TXT", nargs="?", type=str, action="store"
     )
     return parser
 
