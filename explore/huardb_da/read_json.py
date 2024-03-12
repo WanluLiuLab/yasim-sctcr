@@ -7,6 +7,10 @@ import pandas as pd
 from labw_utils.commonutils.stdlib_helper.parallel_helper import parallel_map
 from labw_utils.commonutils.stdlib_helper.shutil_helper import rm_rf
 
+GENE_BLACKLIST = {
+    "TRBV20OR9-2",
+}
+
 
 def run(fn: str):
     part_id = 0
@@ -26,6 +30,8 @@ def run(fn: str):
     for fn_ser_item in fn_ser:
         if not fn_ser_item["full_length"]:
             continue
+        if fn_ser_item["umi_count"] <= 3:
+            continue  # Used by CellRanger
         retd = {
             "high_confidence": fn_ser_item["high_confidence"],
             "productive": fn_ser_item["productive"],
@@ -50,16 +56,34 @@ def run(fn: str):
             "cdr3_nt": fn_ser_item["cdr3_seq"],
             "cdr3_start": fn_ser_item["cdr3_start"],
             "cdr3_stop": fn_ser_item["cdr3_stop"],
-            "sample": sample_name
+            "sample": sample_name,
         }
         for annotation in fn_ser_item["annotations"]:
             retd["chain"] = annotation["feature"]["chain"]
+            if retd["chain"] not in {"TRA", "TRB"}:
+                continue
             segment_name = annotation["feature"]["gene_name"][3].lower()
             if segment_name not in {"v", "d", "j", "c"}:
                 continue
-            retd[segment_name] = annotation["feature"]["gene_name"]
-            retd[segment_name + "_start"] = annotation["contig_match_start"]
-            retd[segment_name + "_end"] = annotation["contig_match_end"]
+            gene_name = annotation["feature"]["gene_name"].replace("/", "")
+            if gene_name in GENE_BLACKLIST:
+                continue
+            retd[segment_name] = gene_name
+            if annotation["contig_match_start"] is None or annotation["contig_match_end"] is None:
+                continue
+            if annotation["contig_match_start"] > annotation["contig_match_end"]:
+                continue
+            retd[segment_name + "_start"] = min(
+                2147483647 if retd[segment_name + "_start"] is None else retd[segment_name + "_start"],
+                annotation["contig_match_start"],
+            )
+            retd[segment_name + "_end"] = max(
+                0 if retd[segment_name + "_end"] is None else retd[segment_name + "_end"],
+                annotation["contig_match_end"],
+            )
+        if retd["v_end"] is None or retd["j_start"] is None or abs(retd["j_start"] - retd["v_end"]) > 25:
+            continue  # Used by CellRanger
+
         retl.append(retd)
         if len(retl) == (1 << 14):
             pd.DataFrame(retl).to_parquet(os.path.join("pq", os.path.basename(fn) + f".{part_id}.parquet"))
@@ -77,5 +101,9 @@ def run(fn: str):
 if __name__ == "__main__":
     rm_rf("pq")
     os.makedirs("pq", exist_ok=True)
-    parallel_map(run, glob.glob(
-        os.path.join("raw_data", "*_all_contig_annotations.json")), n_jobs=20, backend="multiprocessing")
+    parallel_map(
+        run,
+        glob.glob(os.path.join("raw_data", "*_all_contig_annotations.json")),
+        n_jobs=30,
+        backend="loky",
+    )

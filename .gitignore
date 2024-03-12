@@ -473,3 +473,9 @@ syq_article_simulation2
 !workflow.svg
 /twine.pypirc.ini
 !requirements.txt
+*.famsa
+*.psl
+*.dict
+*.idx
+
+
