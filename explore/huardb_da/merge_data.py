@@ -25,7 +25,7 @@ if __name__ == "__main__":
             gene_quals = defaultdict(lambda: [])
             for item_id, item in enumerate(pd.read_parquet(filename).itertuples(index=False)):
                 fasta_header = f"{sample_name_id}.{item_id}"
-                # contigs_faw.write(FastaRecord(fasta_header, item.nt))
+                contigs_faw.write(FastaRecord(fasta_header, item.nt))
                 contigs_fqw.write(FastqRecord(fasta_header, item.nt, item.quals))
                 for segment_name in "vdjc":
                     gene_name = item.__getattribute__(segment_name)

@@ -30,7 +30,11 @@
       <excludeFolder url="file://$MODULE_DIR$/explore/test/out4msa.aa.fa.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/test/out4msa.nt.fa.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/sim_tcr.json.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/bup" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/ens.cdna.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.fq.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples_d.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/ref" />
       <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data" />
       <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/IMGT_V-QUEST_reference_directory" />
       <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/blastdb" />
