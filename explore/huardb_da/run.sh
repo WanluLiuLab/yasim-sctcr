@@ -16,59 +16,17 @@ done <huardb_all_contig_annotations.lofn
 mkdir -p pq
 python read_json.py
 python merge_data.py
+samtools faidx cdr3_aa.fa
+seqtk sample all_contigs.fq 20000 > all_contigs_s20k.fq
 
-#for fn in out4msa_samples.nt.fa.d/*.fa; do
-#    echo "${fn}"
-#    if [ ! -f "${fn}".famsa ]; then
-#        famsa -t 0 "${fn}" "${fn}".famsa
-#    fi
-#    hmmbuild --cpu 40 --fast --dna "${fn}".hmm "${fn}".famsa
-#done
-#for fn in out4msa_samples.nt.fa.d/*.hmm; do
-#    GEN_URL="$(curl -H 'Accept:application/json' -F file="@${fn}" -F processing=hmm http://localhost:8000/ | jq .uuid --raw-output)"
-#    echo "${GEN_URL}"
-#    curl -H 'Accept:image/png' "http://localhost:8000/logo/${GEN_URL,,}/download/?colors=default&format=png" >"${fn}".png
-#done
-#
-#Rscript plot.R
-#
-#bedtools sort -i all_contigs.cellranger.bed >all_contigs.cellranger.srt.bed
-#
-#seqtk sample all_contigs.fa 1000 >all_contigs.h1k.fa
-#samtools faidx all_contigs.h1k.fa
-#pblat -threads=36 -t=dna -q=dna -out=psl ../test/all_nt.fa all_contigs.h1k.fa all_contigs.h1k.nt.blat.fa.psl
-#pslToBed all_contigs.h1k.nt.blat.fa.psl /dev/stdout | awk 'BEGIN{FS="\t";OFS="\t"}{print $4,$7,$8,$1,".",$6}' >all_contigs.h1k.nt.blat.fa.bed
-#mmseqs easy-search \
-#    --format-output "query,target,evalue,cigar,alnlen,nident,qlen,tlen,qstart,qend,tstart,tend" \
-#    -s 7.5 \
-#    --search-type 4 \
-#    --format-mode 0 \
-#    all_contigs.h1k.fa ../test/all_nt.fa all_contigs.h1k.fa.mmseqs2.tsv /tmp
-#cut all_contigs.h1k.fa.mmseqs2.tsv -f 1,2,9,10 |
-#    awk 'BEGIN{FS="\t";OFS="\t"}{if($3>$4){print $1,$4,$3,$2,".","-";}else{print $1,$3,$4,$2,".","+";}}' \
-#        >all_contigs.h1k.fa.mmseqs2.bed
-#
-#awk 'BEGIN{FS="\t";OFS="\t"}{print $1,"1",$2}' all_contigs.h1k.fa.fai >all_contigs.h1k.fa.fai.bed
-#bedtools intersect \
-#    -a all_contigs.cellranger.srt.bed \
-#    -b all_contigs.h1k.fa.fai.bed -wa >all_contigs.h1k.cellranger.bed
-#
-#mmseqs easy-search \
-#    --format-mode 1 \
-#    -s 7.5 \
-#    --search-type 3 \
-#    out4msa_samples.nt.fa.d/TRAC.fa \
-#    ../test/out4msa.nt.fa.d/TRAC.fa \
-#    test.sam \
-#    /tmp
-#samtools sort test.sam -o test.bam -@40
-#samtools index test.bam
 
 mkdir -p ref
 cd ref
 axel https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
 axel https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz
 axel https://ftp.ensembl.org/pub/release-97/gtf/homo_sapiens/Homo_sapiens.GRCh38.97.gtf.gz
+singularity build deepvariant_cpu_1.5.0.sif docker://google/deepvariant:1.5.0
+
 gunzip ./*.gz
 
 cd ..
@@ -94,49 +52,12 @@ done
 gatk CreateSequenceDictionary -R ens.cdna.fa
 python -m labw_utils.bioutils split_fasta ens.cdna.fa
 
-#gffread \
-#    -F \
-#    --bed \
-#    --stream ref/Homo_sapiens.GRCh38.111.gtf |
-#    grep -E 'gene_biotype=TR_[VDJC]_gene' |
-#    grep -E 'gene_name=TR[AB]' |
-#    grep -E '^([0-9]+|X|Y|Mt)\s' |
-#    cut -f 1,6,7,8,13 |
-#    sed -E 's/CDS.*gene_name=([^;]+);.*/\1/' \
-#        >ens.tcrs.bed
-#printf >ens.tcrs_chr.bed
-#
-#while IFS=$'\t' read -a line; do
-#    chr="${line[0]}"
-#    chr_start="${line[2]}"
-#    chr_end="${line[3]}"
-#    gene_name="${line[4]}"
-#    if [ ! -f "${gene_name}".dbsnp.ljson ]; then
-#        echo "${gene_name} -- ${chr}:${chr_start}-${chr_end}"
-#        esearch -db snp -query "${chr}"'[Chromosome] AND ('"${chr_start}"':'"${chr_end}"'[Base Position])' | efetch -format json >"${gene_name}".dbsnp.ljson
-#    fi
-#done <ens.tcrs.bed
-# Incorrect: introns included as well.
-
 for fn in ens.cdna.fa.d/*.fa; do
     base_name="$(basename "${fn}")"
     echo "${base_name}"
     if [ ! -f ens.cdna.fa.d/"${base_name}.bwt" ]; then
         bwa index ens.cdna.fa.d/"$(basename "${fn}")"
     fi
-    #    if [ -f out4msa_samples.nt.fa.d/"${base_name}" ] && [ ! -f out4msa_samples.nt.fa.d/"${base_name}".mmseqs2.bam ]; then
-    #        mmseqs easy-search \
-    #            --format-mode 1 \
-    #            --search-type 3 \
-    #            out4msa_samples.nt.fa.d/"${base_name}" \
-    #            ens.cdna.fa.d/"${base_name}" \
-    #            out4msa_samples.nt.fa.d/"${base_name}".mmseqs2.sam \
-    #            /tmp
-    #        samtools sort \
-    #            -@40 out4msa_samples.nt.fa.d/"${base_name}".mmseqs2.sam \
-    #            -o out4msa_samples.nt.fa.d/"${base_name}".mmseqs2.bam
-    #        samtools index out4msa_samples.nt.fa.d/"${base_name}".mmseqs2.bam
-    #    fi
     base_name_fq="${base_name/fa/fq}"
     echo "${base_name_fq}"
     if [ -f out4msa_samples.nt.fq.d/"${base_name_fq}" ] &&
@@ -169,18 +90,66 @@ for aligner in bwa; do
         -ploidy 1 \
         -I out4msa_samples.nt."${aligner}".rg.bam \
         -O out4msa_samples.nt."${aligner}".gatk.vcf
-    bcftools mpileup -Ou \
-        out4msa_samples.nt."${aligner}".rg.bam \
-        -f ens.cdna.fa |
-        bcftools call \
-            --ploidy 1 \
-            --multiallelic-caller \
-            --variants-only \
-            --threads 40 \
-            -o out4msa_samples.nt."${aligner}".bcftools.vcf
     freebayes-parallel \
         <(fasta_generate_regions.py ens.cdna.fa.fai 1000) 40 \
         -f ens.cdna.fa \
         -p 1 \
         out4msa_samples.nt."${aligner}".rg.bam >out4msa_samples.nt."${aligner}".freebayes.vcf
+    samtools mpileup out4msa_samples.nt."${aligner}".rg.bam -f ens.cdna.fa |
+        varscan mpileup2cns \
+        --output-vcf \
+        --vcf-sample-list <(echo huardb) \
+        --variants >out4msa_samples.nt."${aligner}".varscan.vcf
+    # mamba create -n yasim-clair3 clair3 -c conda-forge -c bioconda
+    run_clair3.sh \
+        --bam_fn=out4msa_samples.nt."${aligner}".rg.bam \
+        --ref_fn=ens.cdna.fa \
+        --threads=40 \
+        --include_all_ctgs \
+        --platform=ilmn \
+        --sample_name=huardb \
+        --model_path="${CONDA_PREFIX}"/bin/models/ilmn/ \
+        --output=out4msa_samples.nt."${aligner}".clair3.vcf.d
+    zcat out4msa_samples.nt."${aligner}".clair3.vcf.d/merge_output.vcf.gz >out4msa_samples.nt."${aligner}".clair3.vcf
+    # mamba create -n yasim-deepvariant deepvariant -c conda-forge -c bioconda etils python=3.7 # Failed
+
+    # ERR: Some or all of the contigs in the reference genome (ens.cdna) are not present in the read files.
+    # octopus --reference ens.cdna.fa --reads out4msa_samples.nt."${aligner}".rg.bam > out4msa_samples.nt."${aligner}".octopus.vcf
 done
+python collect_vcf.py > variants.tsv
+
+for fn in out4msa_samples.nt.bwa.*.vcf; do
+    bgzip "${fn}"
+    tabix "${fn}".gz
+done
+
+mkdir -p out4msa_samples.nt.bwa.merged.d
+bcftools isec \
+    -p out4msa_samples.nt.bwa.merged.d \
+    -n +2 \
+    out4msa_samples.nt.bwa.*.vcf.gz > /dev/null
+
+for fn in out4msa_samples.nt.bwa.merged.d/*.vcf; do
+    bgzip "${fn}"
+    tabix "${fn}".gz
+done
+
+bcftools concat -a --remove-duplicates out4msa_samples.nt.bwa.merged.d/*.vcf.gz> out4msa_samples.nt.bwa.merged.vcf
+
+
+mkdir -p gene4msa
+for gene_name in TRAV TRAJ TRBV TRBJ TRBC; do
+    seqkit grep \
+        --by-name \
+        --use-regexp \
+        -p "${gene_name}.*" \
+        ens.cdna.fa \
+        >gene4msa/"${gene_name}.fa"
+    t_coffee -type=dna -output fasta_aln gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}".fa.t_coffee
+    mafft --thread -1 --auto gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}".mafft
+    clustalo --auto -i gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}".clustalo
+    famsa gene4msa/"${gene_name}".fa gene4msa/"${gene_name}".famsa
+    muscle -align gene4msa/"${gene_name}".fa -output gene4msa/"${gene_name}".muscle
+    probcons gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}".probcons
+done
+

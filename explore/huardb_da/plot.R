@@ -1,83 +1,80 @@
 library(tidyverse)
 library(patchwork)
+library(pheatmap)
+library(ComplexUpset)
 
 df <- arrow::read_parquet("merged.parquet") %>%
     tibble::as_tibble() %>%
     dplyr::select(!c("nt", "quals"))
 
-df_v_grouped <- df %>% dplyr::select(sample, productive) %>%
-    dplyr::group_by(sample, productive) %>%
+df_pq <- arrow::read_parquet("merged_pq_cell.parquet") %>%
+    tibble::as_tibble() %>%
+    dplyr::select(!"sample_level_barcode")
+
+df_clonal <- df_pq %>%
+    dplyr::group_by(nt_blake2b) %>%
     dplyr::summarise(n=n()) %>%
     dplyr::ungroup() %>%
-    tidyr::pivot_wider(names_from = productive, values_from = n) %>%
-    dplyr::filter((`FALSE`+`TRUE`) > 100) %>%
-    dplyr::transmute(sample, prod_rate=1.0 * `TRUE`/(`FALSE`+`TRUE`))
+    dplyr::filter(n!=1) %>%
+    dplyr::arrange(n) %>%
+    dplyr::mutate(rank=n() - 1:n()) %>%
+    tibble::as_tibble()
 
-ggplot(df_v_grouped) +
-    geom_violin(aes(x='1', y=prod_rate)) +
+# p <- ggplot(df_clonal) +
+#     geom_point(aes(x=rank, y=n)) +
+#     scale_x_continuous(trans="log10") +
+#     scale_y_continuous(trans="log10") +
+#     theme_bw()
+# ggsave("clonal_zipf.png", p)
+
+p <- ggplot(df_clonal) +
+    geom_histogram(aes(x=n), bins = 400) +
+    # scale_y_continuous(trans="log2") +
+    # scale_x_continuous(limits = c(0, 500)) +
+    # scale_y_continuous(limits = c(0, 1000)) +
+    ylim(0, 500) + xlim(0, 500) +
     theme_bw()
+ggsave("clonal_hist.png", p)
 
-ggplot(df) +
-    geom_bar(aes(x=productive)) +
-    facet_wrap(.~v, scales = "free") +
-    theme_bw()
+df_avj_count <- df_pq %>%
+    dplyr::group_by(trav,traj) %>%
+    dplyr::summarise(n=n()) %>%
+    dplyr::ungroup()%>%
+    tidyr::pivot_wider(names_from = trav, values_from = n) %>%
+    as.data.frame()
 
-df_mut <- df %>%
-    dplyr::mutate(vjlen = as.integer(j_start - v_end)) %>%
-    tidyr::replace_na(list(d="NULL"))
-ggplot(df_mut) +
-    geom_violin(aes(x=vjlen, y=productive), kernel = "gaussian", adjust=4) +
-    theme_bw()
+row.names(df_avj_count) <- df_avj_count$traj
+df_avj_count$traj <- NULL
 
+pheatmap(
+    log10(df_avj_count),
+    cluster_cols = FALSE,
+    cluster_rows = FALSE,
+    filename="avj_count.pdf"
+)
 
-# assemb_full_df <- data.frame()
-# for (fn in c("all_long_d.aa.fa.tsv", "all_long_d.nt.fa.tsv")) {
-#     message(fn)
-#     df <- readr::read_tsv(
-#         fn, quote = "'", show_col_types = FALSE,
-#         col_names = c("query", "target", "evalue", "cigar", "alnlen", "nident", "qlen", "tlen", "qstart", "qend", "tstart", "tend")
-#     )
-#     if (length(grep("aa", fn)) != 0) {
-#         df <- df %>%
-#             dplyr::mutate(tlen=tlen*3, alnlen=alnlen*3)
-#     }
-#     df <- df %>%
-#         dplyr::mutate(
-#             aln_q = alnlen / qlen,
-#             aln_t = alnlen / tlen
-#         ) %>%
-#         dplyr::filter(evalue<1E-5)
-#
-#     assemb_full_df <- rbind(
-#         assemb_full_df,
-#         df %>% dplyr::mutate(fn = fn)
-#     )
-# }
-# g1 <- ggplot(assemb_full_df) +
-#     geom_hex(
-#         aes(x = aln_q, y = aln_t)
-#     ) +
-#     xlab("Portion of Query") +
-#     facet_grid(fn ~ .) +
-#     scale_fill_continuous(trans = "log10") +
-#     theme_bw() +
-#     scale_y_continuous("Portion of Target", breaks = scales::breaks_extended(20), limits = c(0, 1)) +
-#     scale_x_continuous("Portion of Query", breaks = scales::breaks_extended(20), limits = c(0, 1))
-# g2 <- ggplot(assemb_full_df) +
-#     geom_violin(aes(y = aln_q, x = fn)) +
-#     theme_bw() +
-#     scale_y_continuous("Portion of Query", breaks = scales::breaks_extended(20), limits = c(0, 1))
-# g3 <- ggplot(assemb_full_df) +
-#     geom_violin(aes(y = aln_t, x = fn)) +
-#     theme_bw() +
-#     scale_y_continuous("Portion of Target", breaks = scales::breaks_extended(20), limits = c(0, 1))
-# g4 <- ggplot(assemb_full_df) +
-#     geom_hex(aes(y = alnlen, x = qlen)) +
-#     facet_grid(. ~ fn) +
-#     scale_fill_continuous(trans = "log10") +
-#     theme_bw() +
-#     ggtitle("Portion of Query")
-# g <- (g1 + (g2 / g3)) / g4
-# ggsave(paste0("aligned_samples.pdf"), g, width = 10, height = 15)
-#
+df_bvj_count <- df_pq %>%
+    dplyr::group_by(trbv,trbj) %>%
+    dplyr::summarise(n=n()) %>%
+    dplyr::ungroup()%>%
+    tidyr::pivot_wider(names_from = trbv, values_from = n) %>%
+    as.data.frame()
 
+row.names(df_bvj_count) <- df_bvj_count$trbj
+df_bvj_count$trbj <- NULL
+
+pheatmap(
+    log10(df_bvj_count),
+    cluster_cols = FALSE,
+    cluster_rows = FALSE,
+    filename="bvj_count.pdf"
+)
+
+var_df <- readr::read_tsv("variants.tsv")
+var_df_wide <- var_df %>%
+    dplyr::select(START, STOP, REF, ALT, CHR, caller) %>%
+    dplyr::mutate(present=TRUE) %>%
+    tidyr::pivot_wider(names_from = caller, values_from = present)
+
+p <- upset(var_df_wide, unique(var_df$caller), name = "caller")
+ggsave("var_upset.pdf", p)

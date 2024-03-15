@@ -477,5 +477,6 @@ syq_article_simulation2
 *.psl
 *.dict
 *.idx
-
+*.sif
+*.tbi
 

@@ -27,7 +27,7 @@ def run(fn: str):
             print(f"SAMPLE: {sample_name} READ ERR")
             return
     retl = []
-    for fn_ser_item in fn_ser:
+    for fn_ser_item_id, fn_ser_item in enumerate(fn_ser):
         if not fn_ser_item["full_length"]:
             continue
         if fn_ser_item["umi_count"] <= 3:
@@ -57,11 +57,20 @@ def run(fn: str):
             "cdr3_start": fn_ser_item["cdr3_start"],
             "cdr3_stop": fn_ser_item["cdr3_stop"],
             "sample": sample_name,
+            "sample_level_barcode": fn_ser_item["barcode"],
+            "sample_level_id": fn_ser_item_id,
         }
+        # Those software reports TRAV matches TRBJ. Hilarious.
+        # Will think the first one as correct.
+        chain_set = list(set(annotation["feature"]["chain"] for annotation in fn_ser_item["annotations"]))
+        if len(chain_set) != 1:
+            continue
+        retd["chain"] = chain_set[0]
+        if retd["chain"] not in {"TRA", "TRB"}:
+            continue
+
         for annotation in fn_ser_item["annotations"]:
             retd["chain"] = annotation["feature"]["chain"]
-            if retd["chain"] not in {"TRA", "TRB"}:
-                continue
             segment_name = annotation["feature"]["gene_name"][3].lower()
             if segment_name not in {"v", "d", "j", "c"}:
                 continue

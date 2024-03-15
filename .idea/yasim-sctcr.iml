@@ -41,6 +41,10 @@
       <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/ncbi-igblast-1.22.0" />
       <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0" />
       <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/refseq" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/gene4msa" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.bwa.clair3.vcf.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.bwa.merged.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/pq_cell" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

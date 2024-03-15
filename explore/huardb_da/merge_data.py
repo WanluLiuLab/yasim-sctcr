@@ -1,3 +1,4 @@
+import gc
 import glob
 from collections import defaultdict
 
@@ -11,10 +12,11 @@ from labw_utils.commonutils.importer.tqdm_importer import tqdm
 from labw_utils.commonutils.lwio.safe_io import get_appender, get_writer
 
 if __name__ == "__main__":
-    pd.read_parquet(glob.glob("./pq/*.parquet")).to_parquet("merged.parquet")
+    # pd.read_parquet(glob.glob("./pq/*.parquet")).to_parquet("merged.parquet")
+    gc.collect()
     with FastaWriter("all_contigs.fa") as contigs_faw, get_writer(
         "all_contigs.cellranger.bed", is_binary=False
-    ) as contig_annotw, FastqWriter("all_contigs.fq") as contigs_fqw:
+    ) as contig_annotw, FastqWriter("all_contigs.fq") as contigs_fqw, FastaWriter("cdr3_aa.fa") as cdr3_aa_w:
         for filename in tqdm(glob.glob("./pq/*.parquet")):
             sample_name_id = (
                 filename.replace("./pq/_Volumes_rsch_HuarcBackup_", "")
@@ -24,9 +26,18 @@ if __name__ == "__main__":
             gene_seqs = defaultdict(lambda: [])
             gene_quals = defaultdict(lambda: [])
             for item_id, item in enumerate(pd.read_parquet(filename).itertuples(index=False)):
-                fasta_header = f"{sample_name_id}.{item_id}"
+                fasta_header = " ".join((
+                    f"{sample_name_id}.{item_id} {item.productive}",
+                    f"{item.v}:{item.v_start}-{item.v_end}",
+                    f"{item.d}:{item.d_start}-{item.d_end}",
+                    f"{item.j}:{item.j_start}-{item.j_end}",
+                    f"{item.c}:{item.c_start}-{item.c_end}",
+                    str(item.cdr3_aa),
+                ))
                 contigs_faw.write(FastaRecord(fasta_header, item.nt))
                 contigs_fqw.write(FastqRecord(fasta_header, item.nt, item.quals))
+                if item.cdr3_aa is not None:
+                    cdr3_aa_w.write(FastaRecord(fasta_header, item.cdr3_aa))
                 for segment_name in "vdjc":
                     gene_name = item.__getattribute__(segment_name)
                     if item.__getattribute__(segment_name) is not None:
