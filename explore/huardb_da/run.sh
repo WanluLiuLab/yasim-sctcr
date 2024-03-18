@@ -139,17 +139,19 @@ bcftools concat -a --remove-duplicates out4msa_samples.nt.bwa.merged.d/*.vcf.gz>
 
 mkdir -p gene4msa
 for gene_name in TRAV TRAJ TRBV TRBJ TRBC; do
-    seqkit grep \
-        --by-name \
-        --use-regexp \
-        -p "${gene_name}.*" \
-        ens.cdna.fa \
-        >gene4msa/"${gene_name}.fa"
-    t_coffee -type=dna -output fasta_aln gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}".fa.t_coffee
-    mafft --thread -1 --auto gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}".mafft
-    clustalo --auto -i gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}".clustalo
-    famsa gene4msa/"${gene_name}".fa gene4msa/"${gene_name}".famsa
-    muscle -align gene4msa/"${gene_name}".fa -output gene4msa/"${gene_name}".muscle
-    probcons gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}".probcons
+    for type in cdna pep; do
+        seqkit grep \
+            --by-name \
+            --use-regexp \
+            -p "${gene_name}.*" \
+            ens."${type}".fa \
+            >gene4msa/"${gene_name}.${type}.fa"
+        # t_coffee -type=dna -output fasta_aln gene4msa/"${gene_name}".fa >gene4msa/"${gene_name}.${type}".fa.t_coffee
+        mafft --thread -1 --auto gene4msa/"${gene_name}.${type}".fa >gene4msa/"${gene_name}.${type}".mafft
+        clustalo --auto -i gene4msa/"${gene_name}.${type}".fa >gene4msa/"${gene_name}.${type}".clustalo
+        famsa gene4msa/"${gene_name}.${type}".fa gene4msa/"${gene_name}.${type}".famsa
+        muscle -align gene4msa/"${gene_name}.${type}".fa -output gene4msa/"${gene_name}.${type}".muscle
+        probcons gene4msa/"${gene_name}.${type}".fa >gene4msa/"${gene_name}.${type}".probcons
+    done
 done
-
+mkdir -p mut_aa.d

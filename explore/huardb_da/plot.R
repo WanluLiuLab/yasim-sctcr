@@ -7,10 +7,30 @@ df <- arrow::read_parquet("merged.parquet") %>%
     tibble::as_tibble() %>%
     dplyr::select(!c("nt", "quals"))
 
+df_mut <- readr::read_tsv("/home/yuzj/Documents/tcrAnnotator/tmp/mut.tsv")
+
+for (gene_name in unique(df_mut$gene)){
+    message(gene_name)
+    if (length(grep("CDR3", gene_name)) != 0) {
+        next
+    }
+    p <- df_mut %>%
+        dplyr::filter(gene==gene_name) %>%
+    ggplot() +
+    geom_bar(aes(fill=mutType, x=pepPos)) +
+    theme_bw()
+    ggsave(sprintf("mut_aa.d/%s.png", gene_name), p, limitsize = FALSE)
+}
+
+quit()
+
+
+df_frame <- readr::read_tsv("/home/yuzj/Documents/tcrAnnotator/tmp/frame.csv")
+
+
 df_pq <- arrow::read_parquet("merged_pq_cell.parquet") %>%
     tibble::as_tibble() %>%
     dplyr::select(!"sample_level_barcode")
-
 df_clonal <- df_pq %>%
     dplyr::group_by(nt_blake2b) %>%
     dplyr::summarise(n=n()) %>%
@@ -19,7 +39,6 @@ df_clonal <- df_pq %>%
     dplyr::arrange(n) %>%
     dplyr::mutate(rank=n() - 1:n()) %>%
     tibble::as_tibble()
-
 # p <- ggplot(df_clonal) +
 #     geom_point(aes(x=rank, y=n)) +
 #     scale_x_continuous(trans="log10") +

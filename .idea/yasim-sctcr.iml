@@ -45,6 +45,8 @@
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.bwa.clair3.vcf.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.bwa.merged.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/pq_cell" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/mut_aa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/raw_data" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
