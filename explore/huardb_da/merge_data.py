@@ -26,14 +26,16 @@ if __name__ == "__main__":
             gene_seqs = defaultdict(lambda: [])
             gene_quals = defaultdict(lambda: [])
             for item_id, item in enumerate(pd.read_parquet(filename).itertuples(index=False)):
-                fasta_header = " ".join((
-                    f"{sample_name_id}.{item_id} {item.productive}",
-                    f"{item.v}:{item.v_start}-{item.v_end}",
-                    f"{item.d}:{item.d_start}-{item.d_end}",
-                    f"{item.j}:{item.j_start}-{item.j_end}",
-                    f"{item.c}:{item.c_start}-{item.c_end}",
-                    str(item.cdr3_aa),
-                ))
+                fasta_header = " ".join(
+                    (
+                        f"{sample_name_id}.{item_id} {item.productive}",
+                        f"{item.v}:{item.v_start}-{item.v_end}",
+                        f"{item.d}:{item.d_start}-{item.d_end}",
+                        f"{item.j}:{item.j_start}-{item.j_end}",
+                        f"{item.c}:{item.c_start}-{item.c_end}",
+                        str(item.cdr3_aa),
+                    )
+                )
                 contigs_faw.write(FastaRecord(fasta_header, item.nt))
                 contigs_fqw.write(FastqRecord(fasta_header, item.nt, item.quals))
                 if item.cdr3_aa is not None:

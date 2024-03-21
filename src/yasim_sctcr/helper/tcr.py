@@ -5,13 +5,18 @@ import json
 import operator
 import random
 import uuid
+from typing import Literal
 
 from labw_utils.typing_importer import List, Tuple, Dict, Mapping, Any, Optional
 
 import numpy as np
 
 from labw_utils.bioutils.algorithm.alignment import SmithWatermanAligner
-from labw_utils.bioutils.algorithm.sequence import translate_cdna, TRANSL_TABLES, TRANSL_TABLES_NT
+from labw_utils.bioutils.algorithm.sequence import (
+    translate_cdna,
+    TRANSL_TABLES,
+    TRANSL_TABLES_NT,
+)
 from labw_utils.commonutils.lwio.safe_io import get_reader
 
 TCRTranslationTableType = List[Tuple[str, str, str, str]]
@@ -38,7 +43,13 @@ def align(ref_nt_seq: str, imgt_aa_seq: str) -> TCRTranslationTableType:
     for i in (0, 1, 2):
         seq = ref_nt_seq[i:]
         seq = seq[: len(seq) - len(seq) % 3]
-        swa = SmithWatermanAligner(translate_cdna(seq), imgt_aa_seq, is_global=False, mismatch_score=-6, indel_score=-6)
+        swa = SmithWatermanAligner(
+            translate_cdna(seq),
+            imgt_aa_seq,
+            is_global=False,
+            mismatch_score=-6,
+            indel_score=-6,
+        )
         swas.append(swa)
     mn = np.argmax(list(swa.score for swa in swas))
     backtrack = swas[mn].get_backtrack()[0].splitlines()[1:]
@@ -52,44 +63,63 @@ def align(ref_nt_seq: str, imgt_aa_seq: str) -> TCRTranslationTableType:
     nt_p = 0
     if mn != 0:
         nt_p = mn
-        translation_table.append((ref_nt_seq[0:nt_p], "-", "-", "X"))
+        translation_table.append((ref_nt_seq[0:nt_p], SmithWatermanAligner.GAP, SmithWatermanAligner.GAP, "X"))
     for trans_aa, status, real_aa in zip(*backtrack):
-        if status == "=" or status == "M":
+        if status == SmithWatermanAligner.MATCH or status == SmithWatermanAligner.MISMATCH:
             translation_table.append((ref_nt_seq[nt_p : nt_p + 3], trans_aa, real_aa, status))
             nt_p += 3
-        elif status == "I":
-            translation_table.append(("-", "-", real_aa, status))
-        elif status == "D":
-            translation_table.append((ref_nt_seq[nt_p : nt_p + 3], trans_aa, "-", status))
+        elif status == SmithWatermanAligner.INS:
+            translation_table.append((SmithWatermanAligner.GAP, SmithWatermanAligner.GAP, real_aa, status))
+        elif status == SmithWatermanAligner.DEL:
+            translation_table.append((ref_nt_seq[nt_p : nt_p + 3], trans_aa, SmithWatermanAligner.GAP, status))
             nt_p += 3
     if nt_p < len(ref_nt_seq):
-        translation_table.append((ref_nt_seq[nt_p:], "-", "-", "X"))
+        translation_table.append((ref_nt_seq[nt_p:], SmithWatermanAligner.GAP, SmithWatermanAligner.GAP, "X"))
     return translation_table
 
 
 class FullGenerationRecord:
     uuid: str
-    barcode: str
     trav: str
     traj: str
     trbv: str
     trbj: str
+    trac: str
+    trbc: str
     initial_cdr3: Optional[str]
 
-    def __init__(self, barcode: str, trav: str, traj: str, trbv: str, trbj: str):
+    def __init__(
+        self,
+        trav: str,
+        traj: str,
+        trbv: str,
+        trbj: str,
+        trac: str,
+        trbc: str,
+    ):
         self.uuid = str(uuid.uuid4())
-        self.barcode = barcode
         self.trav = trav
         self.traj = traj
         self.trbj = trbj
         self.trbv = trbv
+        self.trac = trac
+        self.trbc = trbc
         self.initial_cdr3 = None
 
     def set_initial_cdr3(self, initial_cdr3: str):
         self.initial_cdr3 = initial_cdr3
 
     def as_tuple(self):
-        return (self.uuid, self.barcode, self.trav, self.traj, self.trbv, self.trbj, self.initial_cdr3)
+        return (
+            self.uuid,
+            self.trav,
+            self.traj,
+            self.trbv,
+            self.trbj,
+            self.trac,
+            self.trbc,
+            self.initial_cdr3,
+        )
 
 
 class GenerationFailure(RuntimeError):
@@ -123,10 +153,11 @@ class Cdr3InsertionTable:
             "B": {i: sum(itertools.chain(*self._table["B"][i])) for i in self._table["B"].keys()},
         }
 
-    def generate_cdr3(self, chain: str) -> TCRTranslationTableType:
+    def generate_cdr3(self, chain: Literal["A", "B"]) -> TCRTranslationTableType:
         rets = []
         cdr3_length = random.choices(
-            list(self._num_to_insert[chain].keys()), list(self._num_to_insert[chain].values())
+            list(self._num_to_insert[chain].keys()),
+            list(self._num_to_insert[chain].values()),
         )[0]
         cdr3_pos_freq: List[List[int]] = self._table[chain][cdr3_length]
         for i in range(cdr3_length):
@@ -154,39 +185,55 @@ class TCell:
     _trbj_name: str
     _trav_name: str
     _trbv_name: str
+    _trac_name: str
+    _trbc_name: str
+
     _traj_tt: TCRTranslationTableType
     _trav_tt: TCRTranslationTableType
+    _trac_tt: TCRTranslationTableType
+
     _trbj_tt: TCRTranslationTableType
     _trbv_tt: TCRTranslationTableType
+    _trbc_tt: TCRTranslationTableType
+
     _tra_cdr3_tt: TCRTranslationTableType
     _trb_cdr3_tt: TCRTranslationTableType
-    _cell_barcode: str
+    _cell_uuid: str
 
     def __init__(
         self,
-        cell_barcode: str,
+        *,
         traj_name: str,
         trbj_name: str,
         trav_name: str,
         trbv_name: str,
+        trac_name: str,
+        trbc_name: str,
         traj_tt: TCRTranslationTableType,
         trav_tt: TCRTranslationTableType,
+        trac_tt: TCRTranslationTableType,
         trbj_tt: TCRTranslationTableType,
         trbv_tt: TCRTranslationTableType,
+        trbc_tt: TCRTranslationTableType,
         tra_cdr3_tt: TCRTranslationTableType,
         trb_cdr3_tt: TCRTranslationTableType,
+        cell_uuid: str,
     ):
-        self._cell_barcode = cell_barcode
         self._traj_name = traj_name
         self._trbj_name = trbj_name
         self._trav_name = trav_name
         self._trbv_name = trbv_name
+        self._trac_name = trac_name
+        self._trbc_name = trbc_name
         self._traj_tt = traj_tt
         self._trav_tt = trav_tt
         self._trbj_tt = trbj_tt
         self._trbv_tt = trbv_tt
+        self._trac_tt = trac_tt
+        self._trbc_tt = trbc_tt
         self._tra_cdr3_tt = tra_cdr3_tt
         self._trb_cdr3_tt = trb_cdr3_tt
+        self._cell_uuid = cell_uuid
 
     @classmethod
     def from_gene_names(
@@ -195,11 +242,11 @@ class TCell:
         cdr3_deletion_table: Cdr3DeletionTableType,
         cdr3_insertion_table: Cdr3InsertionTable,
         tcr_cache: Dict[str, TCRTranslationTableType],
-        barcode: str,
     ):
         def choose_name(tcr_type: str) -> Tuple[str, TCRTranslationTableType]:
+            rg = random.SystemRandom()
             while True:
-                tcr_name = random.choice(tcr_genelist[tcr_type])
+                tcr_name = rg.choice(tcr_genelist[tcr_type])
                 if tcr_name in tcr_cache:
                     return tcr_name, copy.deepcopy(tcr_cache[tcr_name])
 
@@ -232,13 +279,31 @@ class TCell:
                 ret_tt.append(tt_a)
             return ret_tt
 
-        (trbv_name, trbv_tt), (trbj_name, trbj_tt) = choose_name("trbv_names"), choose_name("trbj_names")
-        (traj_name, traj_tt), (trav_name, trav_tt) = choose_name("traj_names"), choose_name("trav_names")
-        fgr = FullGenerationRecord(barcode=barcode, traj=traj_name, trav=trav_name, trbj=trbj_name, trbv=trbv_name)
+        (trbv_name, trbv_tt), (trbj_name, trbj_tt), (trbc_name, trbc_tt) = (
+            choose_name("trbv_names"),
+            choose_name("trbj_names"),
+            choose_name("trbc_names"),
+        )
+        (traj_name, traj_tt), (trav_name, trav_tt), (trac_name, trac_tt) = (
+            choose_name("traj_names"),
+            choose_name("trav_names"),
+            choose_name("trac_names"),
+        )
+
+        fgr = FullGenerationRecord(
+            traj=traj_name,
+            trav=trav_name,
+            trac=trac_name,
+            trbj=trbj_name,
+            trbv=trbv_name,
+            trbc=trbc_name,
+        )
+        cell_uuid = fgr.uuid
 
         chosen_deletion: Dict[str, int] = {
             k: random.choices(
-                population=list(cdr3_deletion_table[k].keys()), weights=list(cdr3_deletion_table[k].values())
+                population=list(cdr3_deletion_table[k].keys()),
+                weights=list(cdr3_deletion_table[k].values()),
             )[0]
             for k in cdr3_deletion_table.keys()
         }
@@ -246,8 +311,18 @@ class TCell:
         if functools.reduce(operator.mul, chosen_deletion.values()) > 625:
             raise GenerationFailure(fgr)
 
-        def clip_nt(tr_tt: TCRTranslationTableType, gene_name: str, pos: int) -> None:
-            """Delete terminal untranslated NTs and generated deletions"""
+        def clip_nt(
+            tr_tt: TCRTranslationTableType,
+            gene_name: str,
+            pos: int,
+        ) -> None:
+            """
+            Delete terminal untranslated NTs and generated deletions
+
+            :param pos: Position to clip from. Use 0 for 5' and -1 for 3'.
+            :param gene_name: Name of the gene.
+            :param tr_tt: TranslationTable object for the gene.
+            """
             num_clip = 0
             try:
                 while tr_tt[pos][-1] == "X":
@@ -270,19 +345,24 @@ class TCell:
         trb_cdr3_tt = cdr3_insertion_table.generate_cdr3("B")
 
         tra_cdr3_tt, trav_tt, traj_tt = clip_aa(
-            tra_cdr3_tt, trav_tt, traj_tt, "W" if traj_name.upper() in {"TRAJ33", "TRAJ38", "TRAJ55"} else "F"
+            tra_cdr3_tt,
+            trav_tt,
+            traj_tt,
+            "W" if traj_name.upper() in {"TRAJ33", "TRAJ38", "TRAJ55"} else "F",
         )
         trb_cdr3_tt, trbv_tt, trbj_tt = clip_aa(trb_cdr3_tt, trbv_tt, trbj_tt, "F")
 
         tra_cdr3_tt = ensure_can_translate(tra_cdr3_tt)
         trav_tt = ensure_can_translate(trav_tt)
         traj_tt = ensure_can_translate(traj_tt)
+        trac_tt = ensure_can_translate(trac_tt[:15])  # Reduced C-gene length conserved from empirical data
         trb_cdr3_tt = ensure_can_translate(trb_cdr3_tt)
         trbv_tt = ensure_can_translate(trbv_tt)
         trbj_tt = ensure_can_translate(trbj_tt)
+        trbc_tt = ensure_can_translate(trbc_tt[:17]) # Reduced C-gene length conserved from empirical data
 
         return cls(
-            cell_barcode=barcode,
+            cell_uuid=cell_uuid,
             trav_tt=trav_tt,
             traj_tt=traj_tt,
             tra_cdr3_tt=tra_cdr3_tt,
@@ -293,17 +373,35 @@ class TCell:
             trav_name=trav_name,
             trbj_name=trbj_name,
             trbv_name=trbv_name,
+            trac_name=trac_name,
+            trbc_name=trbc_name,
+            trac_tt=trac_tt,
+            trbc_tt=trbc_tt,
         )
 
     def to_nt_fasta_record(self) -> str:
-        return "\n".join((f">{self._cell_barcode}_A", self.alpha_nt, f">{self._cell_barcode}_B", self.beta_nt))
+        return "\n".join(
+            (
+                f">{self._cell_uuid}_A",
+                self.alpha_nt,
+                f">{self._cell_uuid}_B",
+                self.beta_nt,
+            )
+        )
 
     def to_aa_fasta_record(self) -> str:
-        return "\n".join((f">{self._cell_barcode}_A", self.alpha_aa, f">{self._cell_barcode}_B", self.beta_aa))
+        return "\n".join(
+            (
+                f">{self._cell_uuid}_A",
+                self.alpha_aa,
+                f">{self._cell_uuid}_B",
+                self.beta_aa,
+            )
+        )
 
     def to_dict(self) -> Mapping[str, Any]:
         return {
-            "cell_barcode": self._cell_barcode,
+            "cell_barcode": self._cell_uuid,
             "traj_name": self._traj_name,
             "trbj_name": self._trbj_name,
             "trav_name": self._trav_name,
@@ -318,15 +416,15 @@ class TCell:
 
     @property
     def cell_uuid(self):
-        return self._cell_barcode
+        return self._cell_uuid
 
     @property
-    def alpha_names(self) -> Tuple[str, str]:
-        return self._trav_name, self._traj_name
+    def alpha_names(self) -> Tuple[str, str, str]:
+        return self._trav_name, self._traj_name, self._trac_name
 
     @property
-    def beta_names(self) -> Tuple[str, str]:
-        return self._trbv_name, self._trbj_name
+    def beta_names(self) -> Tuple[str, str, str]:
+        return self._trbv_name, self._trbj_name, self._trbc_name
 
     @property
     def alpha_nt(self) -> str:
@@ -335,6 +433,7 @@ class TCell:
                 list(zip(*self._trav_tt))[0],
                 list(zip(*self._tra_cdr3_tt))[0],
                 list(zip(*self._traj_tt))[0],
+                list(zip(*self._trac_tt))[0],
             )
         )
 
@@ -345,6 +444,7 @@ class TCell:
                 list(zip(*self._trbv_tt))[0],
                 list(zip(*self._trb_cdr3_tt))[0],
                 list(zip(*self._trbj_tt))[0],
+                list(zip(*self._trbc_tt))[0],
             )
         )
 
@@ -355,6 +455,7 @@ class TCell:
                 list(zip(*self._trav_tt))[1],
                 list(zip(*self._tra_cdr3_tt))[1],
                 list(zip(*self._traj_tt))[1],
+                list(zip(*self._trac_tt))[1],
             )
         )
 
@@ -365,16 +466,20 @@ class TCell:
                 list(zip(*self._trbv_tt))[1],
                 list(zip(*self._trb_cdr3_tt))[1],
                 list(zip(*self._trbj_tt))[1],
+                list(zip(*self._trbc_tt))[1],
             )
         )
 
     @property
     def cdr3_aa(self) -> Tuple[str, str]:
-        return ("".join(list(zip(*self._tra_cdr3_tt))[1]), "".join(list(zip(*self._trb_cdr3_tt))[1]))
+        return (
+            "".join(list(zip(*self._tra_cdr3_tt))[1]),
+            "".join(list(zip(*self._trb_cdr3_tt))[1]),
+        )
 
     @property
     def cdr3_nt(self) -> Tuple[str, str]:
-        return ("".join(list(zip(*self._tra_cdr3_tt))[0]), "".join(list(zip(*self._trb_cdr3_tt))[0]))
-
-
-# 15109
+        return (
+            "".join(list(zip(*self._tra_cdr3_tt))[0]),
+            "".join(list(zip(*self._trb_cdr3_tt))[0]),
+        )

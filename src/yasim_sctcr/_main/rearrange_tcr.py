@@ -9,6 +9,8 @@ __all__ = ("main", "create_parser")
 import argparse
 import json
 import os
+
+from labw_utils.commonutils.importer.tqdm_importer import tqdm
 from labw_utils.typing_importer import List, Dict
 
 from labw_utils.commonutils.appender import load_table_appender_class, TableAppenderConfig
@@ -31,14 +33,6 @@ def create_parser() -> argparse.ArgumentParser:
     """
     parser = ArgumentParserWithEnhancedFormatHelp(
         prog="python -m yasim_sctcr rearrange_tcr", description=__doc__.splitlines()[1]
-    )
-    parser.add_argument(
-        "--tcr_genelist_path",
-        required=True,
-        help=f"TCR Gene List JSON. The IMGT version for human is {get_sample_data_path('tcr_gene_list.min.json')}",
-        nargs="?",
-        type=str,
-        action="store",
     )
     parser.add_argument(
         "--tcr_cache_path",
@@ -64,8 +58,29 @@ def create_parser() -> argparse.ArgumentParser:
         type=str,
         action="store",
     )
-    parser = patch_frontend_argument_parser(parser, "-b")
-    parser.add_argument("-o", "--out", required=True, help="Output basename", nargs="?", type=str, action="store")
+    parser.add_argument(
+        "--portion_non_productive",
+        required=False,
+        help="Portion of Non-productive TCRs. Default to 3%.",
+        default=0.03,
+        type=float,
+    )
+    parser.add_argument(
+        "-n",
+        "--num_tcrs",
+        required=True,
+        type=int,
+        help="Number of TCRs to generate",
+    )
+    parser.add_argument(
+        "-o",
+        "--out",
+        required=True,
+        help="Output basename",
+        nargs="?",
+        type=str,
+        action="store",
+    )
     return parser
 
 
@@ -78,18 +93,16 @@ def main(args: List[str]):
     args = create_parser().parse_args(args)
     rearrange_tcr(
         output_base_path=args.out,
-        tcr_genelist_path=args.tcr_genelist_path,
         tcr_cache_path=args.tcr_cache_path,
         cdr3_deletion_table_path=args.cdr3_deletion_table_path,
         cdr3_insertion_table_path=args.cdr3_insertion_table_path,
-        barcode_path=args.barcodes,
+        num_tcrs=args.num_tcrs,
     )
 
 
 def rearrange_tcr(
-    barcode_path: str,
+    num_tcrs: int,
     tcr_cache_path: str,
-    tcr_genelist_path: str,
     output_base_path: str,
     cdr3_deletion_table_path: str,
     cdr3_insertion_table_path: str,
@@ -100,12 +113,27 @@ def rearrange_tcr(
     .. versionadded:: 0.1.0
     """
     n_failure = 0
-    with get_reader(tcr_genelist_path) as reader:
-        tcr_genelist = json.load(reader)
     with get_reader(cdr3_deletion_table_path) as reader:
         cdr3_deletion_table = json.load(reader)
     with get_reader(tcr_cache_path) as reader:
         tcr_cache: Dict[str, TCRTranslationTableType] = json.load(reader)
+
+    tcr_genelist = {
+        "trav_names": [],
+        "traj_names": [],
+        "trac_names": [],
+        "trbv_names": [],
+        "trbj_names": [],
+        "trbc_names": [],
+    }
+    for chr_name in tcr_cache.keys():
+        chr_name_head = chr_name[0:4].lower()
+        try:
+            tcr_genelist[f"{chr_name_head}_names"].append(chr_name)
+        except KeyError:
+            _lh.error(f"TCR Gene Name {chr_name} invalid!")
+            continue
+
     cdr3_insertion_table = Cdr3InsertionTable(cdr3_insertion_table_path)
     cdr3_deletion_table = {k: {int(_k): _v for _k, _v in v.items()} for k, v in cdr3_deletion_table.items()}
     with get_writer(output_base_path + ".nt.fa") as nt_fasta_writer, get_writer(
@@ -117,8 +145,10 @@ def rearrange_tcr(
                 "UUID",
                 "TRAV",
                 "TRAJ",
+                "TRAC",
                 "TRBV",
                 "TRBJ",
+                "TRBC",
                 "ACDR3_AA",
                 "BCDR3_AA",
                 "ACDR3_NT",
@@ -130,7 +160,7 @@ def rearrange_tcr(
             ],
             tac=TableAppenderConfig(buffer_size=1024),
         ) as appender:
-            for barcode in get_tqdm_line_reader(barcode_path):
+            for _ in tqdm(range(num_tcrs)):
                 while True:
                     try:
                         cell = TCell.from_gene_names(
@@ -138,10 +168,9 @@ def rearrange_tcr(
                             cdr3_deletion_table=cdr3_deletion_table,
                             cdr3_insertion_table=cdr3_insertion_table,
                             tcr_cache=tcr_cache,
-                            barcode=barcode,
                         )
                     except GenerationFailure as e:
-                        e.fgr.as_tuple()
+                        # e.fgr.as_tuple()
                         n_failure += 1
                         continue
                     else:

@@ -17,8 +17,7 @@ mkdir -p pq
 python read_json.py
 python merge_data.py
 samtools faidx cdr3_aa.fa
-seqtk sample all_contigs.fq 20000 > all_contigs_s20k.fq
-
+seqtk sample all_contigs.fq 20000 >all_contigs_s20k.fq
 
 mkdir -p ref
 cd ref
@@ -97,9 +96,9 @@ for aligner in bwa; do
         out4msa_samples.nt."${aligner}".rg.bam >out4msa_samples.nt."${aligner}".freebayes.vcf
     samtools mpileup out4msa_samples.nt."${aligner}".rg.bam -f ens.cdna.fa |
         varscan mpileup2cns \
-        --output-vcf \
-        --vcf-sample-list <(echo huardb) \
-        --variants >out4msa_samples.nt."${aligner}".varscan.vcf
+            --output-vcf \
+            --vcf-sample-list <(echo huardb) \
+            --variants >out4msa_samples.nt."${aligner}".varscan.vcf
     # mamba create -n yasim-clair3 clair3 -c conda-forge -c bioconda
     run_clair3.sh \
         --bam_fn=out4msa_samples.nt."${aligner}".rg.bam \
@@ -116,7 +115,7 @@ for aligner in bwa; do
     # ERR: Some or all of the contigs in the reference genome (ens.cdna) are not present in the read files.
     # octopus --reference ens.cdna.fa --reads out4msa_samples.nt."${aligner}".rg.bam > out4msa_samples.nt."${aligner}".octopus.vcf
 done
-python collect_vcf.py > variants.tsv
+python collect_vcf.py >variants.tsv
 
 for fn in out4msa_samples.nt.bwa.*.vcf; do
     bgzip "${fn}"
@@ -127,15 +126,14 @@ mkdir -p out4msa_samples.nt.bwa.merged.d
 bcftools isec \
     -p out4msa_samples.nt.bwa.merged.d \
     -n +2 \
-    out4msa_samples.nt.bwa.*.vcf.gz > /dev/null
+    out4msa_samples.nt.bwa.*.vcf.gz >/dev/null
 
 for fn in out4msa_samples.nt.bwa.merged.d/*.vcf; do
     bgzip "${fn}"
     tabix "${fn}".gz
 done
 
-bcftools concat -a --remove-duplicates out4msa_samples.nt.bwa.merged.d/*.vcf.gz> out4msa_samples.nt.bwa.merged.vcf
-
+bcftools concat -a --remove-duplicates out4msa_samples.nt.bwa.merged.d/*.vcf.gz >out4msa_samples.nt.bwa.merged.vcf
 
 mkdir -p gene4msa
 for gene_name in TRAV TRAJ TRBV TRBJ TRBC; do

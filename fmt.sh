@@ -25,5 +25,4 @@ git ls-files |
             } &
         fi
     done
-
 wait

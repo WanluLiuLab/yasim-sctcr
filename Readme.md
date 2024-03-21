@@ -6,9 +6,9 @@
 
 ## Introduction
 
-Single-Cel T-Cell Receptor (TCR) Sequencing (scTCR-Seq) is an important method in studying the diversity and dynamics of T-cell populations in organisms. However, since number of publically available scTCR-Seq datasets are limited, researchers often needs to reconstruct TCR contigs from scRNA-Seq data, and a benchmark of such tools is required.
+Single-Cel T-Cell Receptor (TCR) Sequencing (scTCR-Seq) is an important method in studying the diversity and dynamics of T-cell populations in organisms. However, since the number of publically available scTCR-Seq datasets are limited, researchers often needs to reconstruct TCR contigs from scRNA-Seq data, and a benchmark of such tools is required.
 
-This software provides an easy way to simulated Next-Generation Sequencing (NGS)-based scTCR-Seq using Illumina sequencer simulator. With realistic TCR contig constructed from statistics of **1.08 million** human TCR V/J CDR3 sequences from [hUARdb](https://huarc.net), it supports simulation of TCR contigs from arbitrary cell number, sequencing depth, read length with Paired/Single End support. It also supports mixing scTCR-Seq data with simulated scRNA-Seq data, which allows calculation of both precision and sensitivity.
+This software provides an easy way to simulate Next-Generation Sequencing (NGS)-based scTCR-Seq using Illumina sequencer simulator. With realistic TCR contig constructed from statistics of **1.08 million** human TCR V/J CDR3 sequences from [hUARdb](https://huarc.net), it supports simulation of TCR contigs from arbitrary cell number, sequencing depth, read length with Paired/Single End support. It also supports mixing scTCR-Seq data with simulated scRNA-Seq data, which allows calculation of both precision and sensitivity.
 
 ![Workflow](./workflow.svg)
 
@@ -49,4 +49,16 @@ python3 -m build
 pip install dist/yasim-sctcr-0.1.0-py3-none-any.whl
 ```
 
-Apart from above instructions, you should also install [ART](https://www.niehs.nih.gov/research/resources/software/biostatistics/art/index.cfm) which is a general-purpose NGS DNA-Seq simulator and is available from [Conda](https://anaconda.org/bioconda/art) and [APT](https://packages.debian.org/stable/art-nextgen-simulation-tools). Tested versions are `2.5.8 (June 6, 2016)`.
+Apart from the above instructions, you should also install [ART](https://www.niehs.nih.gov/research/resources/software/biostatistics/art/index.cfm) which is a general-purpose NGS DNA-Seq simulator and is available from [Conda](https://anaconda.org/bioconda/art) and [APT](https://packages.debian.org/stable/art-nextgen-simulation-tools). Tested versions are `2.5.8 (June 6, 2016)`.
+
+## News
+
+The initial release version is [0.1.0](https://pypi.org/project/yasim-sctcr/0.1.0/) at 2023/08/06.
+
+- ?: Addressed several problems proposed by the reviewers:
+  - [X] Simulation for TRC gene added to `generate_tcr_cache` and `rearrange_tcr`.
+  - [ ] Support the simulation of non-productive TCRs on a fixed ratio.
+  - [ ] The scRNA-Seq simulator accepts scDesign3 outputs.
+  - [ ] Supported the distribution of TCR repertoire created by clonal expansion.
+  - [ ] scTCR-Seq-specific fragment length and bias.
+  - [ ] Supported V/J usage bias.

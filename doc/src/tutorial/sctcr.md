@@ -18,37 +18,53 @@ Download of real statistical data:
 
 Here would list version information of each component used in this tutorial for reproductive purposes.
 
-| Software     | Version   |
-|--------------|-----------|
-| [GNU Bash](https://www.gnu.org/software/bash)     | 5.2.15(1) |
-| [GNU Grep](https://www.gnu.org/software/grep)     | 3.8       |
-| [GNU Wget](https://www.gnu.org/software/wget)     | 1.21.3    |
-| [yasim](https://pypi.org/project/yasim/)        | 3.1.5     |
-| yasim\_sctcr | 0.1.0     |
+| Software                                                                                           | Version   |
+|----------------------------------------------------------------------------------------------------|-----------|
+| [GNU Bash](https://www.gnu.org/software/bash)                                                      | 5.2.15(1) |
+| [GNU Grep](https://www.gnu.org/software/grep)                                                      | 3.8       |
+| [GNU Wget](https://www.gnu.org/software/wget)                                                      | 1.21.3    |
+| [yasim](https://pypi.org/project/yasim/)                                                           | 3.1.5     |
+| [yasim\_sctcr](https://pypi.org/project/yasim-sctcr/)                                              | 0.1.0     |
 | [art\_illumina](https://www.niehs.nih.gov/research/resources/software/biostatistics/art/index.cfm) | 2.5.8     |
-| [samtools](https://www.htslib.org)     | 1.17      |
+| [samtools](https://www.htslib.org)                                                                 | 1.17      |
+| [seqkit](https://bioinf.shenwei.me/seqkit)                                                         | XXX       |
 
 Make sure you had correctly set up the environment as-is specified in {doc}`Readme </_root/Readme>`.
 
 ## Step 0. Preparation
 
-Following code retrieves reference genome sequence (FASTA format) and annotations (GTF format) of human from UCSC used in this example. Since TCRs are only located at chromosome 14 and 7, only those 2 chromosomes are used.
+The following code generates FASTA for peptides and cDNA sequences for TRAV/TRBV genes used in this simulator from Ensembl. The simulator uses data built from CellRanger `vdj` using Ensembl 97 for reference, so we use this version in our tutorial. You may use later versions instead.
 
 ```shell
-wget https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf.gz
-# Filter chromosome 7 and 14 only
-gzip -dcf hg38.ncbiRefSeq.gtf.gz \
-    | grep -e '^chr7\s' -e '^chr14\s' \
-    > hg38.ncbiRefSeq_chr7_14.gtf
-
-wget https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz
-gzip -dcf hg38.fa.gz > hg38.fa
-samtools faidx hg38.fa
+wget https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
+wget https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz
+gunzip Homo_sapiens.GRCh38.cdna.all.fa.gz Homo_sapiens.GRCh38.pep.all.fa.gz
+for name in cdna pep; do
+    seqkit grep \
+        --by-name \
+        --use-regexp \
+        -p 'chromosome:GRCh38:(7|14):' \
+        Homo_sapiens.GRCh38."${name}".all.fa |
+        seqkit grep \
+            --by-name \
+            --use-regexp \
+            -p 'gene_biotype:TR_[VDJC]_gene' \
+            /dev/stdin |
+        seqkit grep \
+            --by-name \
+            --use-regexp \
+            -p 'gene_symbol:TR[AB]' \
+            /dev/stdin | sed -E 's;^>.+ gene_symbol:(\S+) .+$;>\1;' \
+        >ens."${name}".fa
+    samtools faidx ens."${name}".fa
+done
 ```
+
+The above command will generate `ens.cdna.fa` for cDNA sequences and `ens.pep.fa` for peptide sequences and their indices in FAI format if no error occurs.
 
 ## Step 1. Generate Cell Barcodes
 
-Now we would try to generate barcodes for 10 cells. Barcode are unique identifiers for each cell.
+Now we would try to generate barcodes for 10 cells. Barcodes are unique identifiers for each cell.
 
 ```shell
 python -m yasim_sc generate_barcode -n 10 -o barcode.txt
@@ -60,7 +76,7 @@ python -m yasim_sc generate_barcode -n 10 -o barcode.txt
 
 ## Step 2. Generate TCR Depth
 
-Following code generates a depth file with 20 depth for each cell.
+The Following code generates a depth file with 20 depth for each cell.
 
 ```shell
 python -m yasim_sctcr generate_tcr_depth \

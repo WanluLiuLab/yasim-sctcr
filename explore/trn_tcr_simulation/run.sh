@@ -1,11 +1,30 @@
 #!/usr/bin/env bash
 set -ue
-
-axel https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf.gz
-axel https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz
-gunzip ./*.gz
-grep -e '^chr7\s' -e '^chr14\s' hg38.ncbiRefSeq.gtf >hg38.ncbiRefSeq_chr7_14.gtf
-
+mkdir -p ref
+cd ref
+axel https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
+axel https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz
+gunzip Homo_sapiens.GRCh38.cdna.all.fa.gz Homo_sapiens.GRCh38.pep.all.fa.gz
+for name in cdna pep; do
+    seqkit grep \
+        --by-name \
+        --use-regexp \
+        -p 'chromosome:GRCh38:(7|14):' \
+        Homo_sapiens.GRCh38."${name}".all.fa |
+        seqkit grep \
+            --by-name \
+            --use-regexp \
+            -p 'gene_biotype:TR_[VDJC]_gene' \
+            /dev/stdin |
+        seqkit grep \
+            --by-name \
+            --use-regexp \
+            -p 'gene_symbol:TR[AB]' \
+            /dev/stdin | sed -E 's;^>.+ gene_symbol:(\S+) .+$;>\1;' \
+        >ens."${name}".fa
+    samtools faidx ens."${name}".fa
+done
+cd ..
 python -m yasim_sc generate_barcode -n 10 -o barcode.txt
 
 # TCR
@@ -14,19 +33,18 @@ python -m yasim_sctcr generate_tcr_depth \
     -o tcr_depth.tsv \
     -d 400
 python -m yasim_sctcr generate_tcr_cache \
-    --tcr_genelist_path tcr_genelist.json \
-    -o tcr_cache.json \
-    --tcr_aa_table_path IMGT_Protein_Display.json \
-    -f hg38.fa \
-    -g hg38.ncbiRefSeq_chr7_14.gtf
+    --tcr_cdna_fa_path ref/ens.cdna.fa \
+    --tcr_pep_fa_path ref/ens.pep.fa \
+    -o tcr_cache.json
+
 rm -rf sim_tcr.fa.d sim_tcr.d sim_tcr.json.d
 python -m yasim_sctcr rearrange_tcr \
-    --tcr_genelist_path data/tcr_genelist.json \
-    --tcr_cache_path data/tcr_cache.json \
+    --tcr_cache_path tcr_cache.json \
     --cdr3_deletion_table_path data/cdr3_deletion_table.json \
     --cdr3_insertion_table_path data/cdr3_insertion_table.json \
-    -b barcode.txt \
+    -n 10 \
     -o sim_tcr
+
 python -m labw_utils.bioutils split_fasta sim_tcr.nt.fa
 python -m yasim art \
     -F sim_tcr.nt.fa.d \
