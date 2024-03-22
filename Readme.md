@@ -55,10 +55,10 @@ Apart from the above instructions, you should also install [ART](https://www.nie
 
 The initial release version is [0.1.0](https://pypi.org/project/yasim-sctcr/0.1.0/) at 2023/08/06.
 
-- ?: Addressed several problems proposed by the reviewers:
+- 0.1.1: Addressed several problems proposed by the reviewers:
   - [X] Simulation for TRC gene added to `generate_tcr_cache` and `rearrange_tcr`.
   - [ ] Support the simulation of non-productive TCRs on a fixed ratio.
   - [ ] The scRNA-Seq simulator accepts scDesign3 outputs.
-  - [ ] Supported the distribution of TCR repertoire created by clonal expansion.
+  - [X] Supported the distribution of TCR repertoire created by clonal expansion.
   - [ ] scTCR-Seq-specific fragment length and bias.
-  - [ ] Supported V/J usage bias.
+  - [X] Supported V/J usage bias.

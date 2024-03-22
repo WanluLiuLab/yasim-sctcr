@@ -1,9 +1,13 @@
 import glob
+import json
 import os
 import re
 import hashlib
+from collections import defaultdict
+
 import pandas as pd
 
+from labw_utils.commonutils.lwio.safe_io import get_writer
 from labw_utils.commonutils.stdlib_helper.parallel_helper import parallel_map
 from labw_utils.commonutils.stdlib_helper.shutil_helper import rm_rf
 
@@ -46,4 +50,11 @@ if __name__ == "__main__":
         n_jobs=30,
         backend="loky",
     )
-    pd.read_parquet(glob.glob("./pq_cell/*.parquet")).to_parquet("merged_pq_cell.parquet")
+    all_pq = pd.read_parquet(glob.glob("./pq_cell/*.parquet"))
+    usage_bias = defaultdict(lambda: 0)
+    for it in all_pq.itertuples(index=False):
+        usage_bias[":".join((it.traj, it.trav))] += 1
+        usage_bias[":".join((it.trbj, it.trbv))] += 1
+    with get_writer("usage_bias.json") as w:
+        json.dump(dict(usage_bias), w)
+    all_pq.to_parquet("merged_pq_cell.parquet")

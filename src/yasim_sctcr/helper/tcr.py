@@ -4,20 +4,20 @@ import itertools
 import json
 import operator
 import random
-import uuid
-from typing import Literal
-
-from labw_utils.typing_importer import List, Tuple, Dict, Mapping, Any, Optional
 
 import numpy as np
 
+import yasim_sctcr
 from labw_utils.bioutils.algorithm.alignment import SmithWatermanAligner
 from labw_utils.bioutils.algorithm.sequence import (
     translate_cdna,
     TRANSL_TABLES,
     TRANSL_TABLES_NT,
 )
+from labw_utils.commonutils.serializer.json import AbstractJSONSerializable
+
 from labw_utils.commonutils.lwio.safe_io import get_reader
+from labw_utils.typing_importer import List, Tuple, Dict, Mapping, Any, Optional, Literal, Final
 
 TCRTranslationTableType = List[Tuple[str, str, str, str]]
 """
@@ -90,6 +90,7 @@ class FullGenerationRecord:
 
     def __init__(
         self,
+        uuid: str,
         trav: str,
         traj: str,
         trbv: str,
@@ -97,7 +98,7 @@ class FullGenerationRecord:
         trac: str,
         trbc: str,
     ):
-        self.uuid = str(uuid.uuid4())
+        self.uuid = uuid
         self.trav = trav
         self.traj = traj
         self.trbj = trbj
@@ -155,18 +156,19 @@ class Cdr3InsertionTable:
 
     def generate_cdr3(self, chain: Literal["A", "B"]) -> TCRTranslationTableType:
         rets = []
-        cdr3_length = random.choices(
+        rng = random.SystemRandom()
+        cdr3_length = rng.choices(
             list(self._num_to_insert[chain].keys()),
             list(self._num_to_insert[chain].values()),
         )[0]
         cdr3_pos_freq: List[List[int]] = self._table[chain][cdr3_length]
         for i in range(cdr3_length):
-            aa = random.choices(self._table["AANames"], cdr3_pos_freq[i])[0]
+            aa = rng.choices(self._table["AANames"], cdr3_pos_freq[i])[0]
             aa_transl_table = TRANSL_TABLES[1]["AA"]
             rets.append(
                 (
                     TRANSL_TABLES_NT[
-                        random.choice([index for index in range(len(aa_transl_table)) if aa_transl_table[index] == aa])
+                        rng.choice([index for index in range(len(aa_transl_table)) if aa_transl_table[index] == aa])
                     ],
                     aa,
                     aa,
@@ -176,10 +178,32 @@ class Cdr3InsertionTable:
         return rets
 
 
-class TCell:
+class TCell(AbstractJSONSerializable):
     """
     T-Cell representation.
+
+    .. versionadded:: 0.1.0
+    .. versionchanged:: 0.1.1
+         Supports non-productive TCR and TRC genes.
     """
+
+    _title: Final[str] = "TCR"
+
+    @staticmethod
+    def _dump_versions() -> Optional[Mapping[str, Any]]:
+        return {"yasim-sctcr": yasim_sctcr.__version__}
+
+    @staticmethod
+    def _dump_metadata() -> Optional[Mapping[str, Any]]:
+        return {}  # Disabled
+
+    @staticmethod
+    def _validate_versions(versions: Mapping[str, Any]) -> None:
+        pass  # Disabled
+
+    @classmethod
+    def from_dict(cls, in_dict: Mapping[str, Any]):
+        return cls(**in_dict)
 
     _traj_name: str
     _trbj_name: str
@@ -198,7 +222,7 @@ class TCell:
 
     _tra_cdr3_tt: TCRTranslationTableType
     _trb_cdr3_tt: TCRTranslationTableType
-    _cell_uuid: str
+    _tcr_uuid: str
 
     def __init__(
         self,
@@ -217,7 +241,7 @@ class TCell:
         trbc_tt: TCRTranslationTableType,
         tra_cdr3_tt: TCRTranslationTableType,
         trb_cdr3_tt: TCRTranslationTableType,
-        cell_uuid: str,
+        tcr_uuid: str,
     ):
         self._traj_name = traj_name
         self._trbj_name = trbj_name
@@ -233,7 +257,7 @@ class TCell:
         self._trbc_tt = trbc_tt
         self._tra_cdr3_tt = tra_cdr3_tt
         self._trb_cdr3_tt = trb_cdr3_tt
-        self._cell_uuid = cell_uuid
+        self._tcr_uuid = tcr_uuid
 
     @classmethod
     def from_gene_names(
@@ -242,7 +266,18 @@ class TCell:
         cdr3_deletion_table: Cdr3DeletionTableType,
         cdr3_insertion_table: Cdr3InsertionTable,
         tcr_cache: Dict[str, TCRTranslationTableType],
+        usage_bias_tra: Dict[str, int],
+        usage_bias_trb: Dict[str, int],
+        tcr_uuid: str,
     ):
+        def choose_name_jv(
+            chain_type: Literal["a", "b"]
+        ) -> Tuple[Tuple[str, TCRTranslationTableType], Tuple[str, TCRTranslationTableType]]:
+            usage_bias = usage_bias_tra if chain_type == "a" else usage_bias_trb
+            rg = random.SystemRandom()
+            j_name, v_name = rg.choices(list(usage_bias.keys()), list(usage_bias.values()), k=1)[0].split(":")
+            return (j_name, copy.deepcopy(tcr_cache[j_name])), (v_name, copy.deepcopy(tcr_cache[v_name]))
+
         def choose_name(tcr_type: str) -> Tuple[str, TCRTranslationTableType]:
             rg = random.SystemRandom()
             while True:
@@ -279,18 +314,12 @@ class TCell:
                 ret_tt.append(tt_a)
             return ret_tt
 
-        (trbv_name, trbv_tt), (trbj_name, trbj_tt), (trbc_name, trbc_tt) = (
-            choose_name("trbv_names"),
-            choose_name("trbj_names"),
-            choose_name("trbc_names"),
-        )
-        (traj_name, traj_tt), (trav_name, trav_tt), (trac_name, trac_tt) = (
-            choose_name("traj_names"),
-            choose_name("trav_names"),
-            choose_name("trac_names"),
-        )
-
+        (traj_name, traj_tt), (trav_name, trav_tt) = choose_name_jv("a")
+        (trbj_name, trbj_tt), (trbv_name, trbv_tt) = choose_name_jv("b")
+        trbc_name, trbc_tt = choose_name("trbc_names")
+        trac_name, trac_tt = choose_name("trac_names")
         fgr = FullGenerationRecord(
+            uuid=tcr_uuid,
             traj=traj_name,
             trav=trav_name,
             trac=trac_name,
@@ -298,10 +327,10 @@ class TCell:
             trbv=trbv_name,
             trbc=trbc_name,
         )
-        cell_uuid = fgr.uuid
+        rng = random.SystemRandom()
 
         chosen_deletion: Dict[str, int] = {
-            k: random.choices(
+            k: rng.choices(
                 population=list(cdr3_deletion_table[k].keys()),
                 weights=list(cdr3_deletion_table[k].values()),
             )[0]
@@ -359,10 +388,10 @@ class TCell:
         trb_cdr3_tt = ensure_can_translate(trb_cdr3_tt)
         trbv_tt = ensure_can_translate(trbv_tt)
         trbj_tt = ensure_can_translate(trbj_tt)
-        trbc_tt = ensure_can_translate(trbc_tt[:17]) # Reduced C-gene length conserved from empirical data
+        trbc_tt = ensure_can_translate(trbc_tt[:17])  # Reduced C-gene length conserved from empirical data
 
         return cls(
-            cell_uuid=cell_uuid,
+            tcr_uuid=tcr_uuid,
             trav_tt=trav_tt,
             traj_tt=traj_tt,
             tra_cdr3_tt=tra_cdr3_tt,
@@ -382,9 +411,9 @@ class TCell:
     def to_nt_fasta_record(self) -> str:
         return "\n".join(
             (
-                f">{self._cell_uuid}_A",
+                f">{self._tcr_uuid}_A",
                 self.alpha_nt,
-                f">{self._cell_uuid}_B",
+                f">{self._tcr_uuid}_B",
                 self.beta_nt,
             )
         )
@@ -392,31 +421,35 @@ class TCell:
     def to_aa_fasta_record(self) -> str:
         return "\n".join(
             (
-                f">{self._cell_uuid}_A",
+                f">{self._tcr_uuid}_A",
                 self.alpha_aa,
-                f">{self._cell_uuid}_B",
+                f">{self._tcr_uuid}_B",
                 self.beta_aa,
             )
         )
 
     def to_dict(self) -> Mapping[str, Any]:
         return {
-            "cell_barcode": self._cell_uuid,
+            "tcr_uuid": self._tcr_uuid,
             "traj_name": self._traj_name,
             "trbj_name": self._trbj_name,
             "trav_name": self._trav_name,
             "trbv_name": self._trbv_name,
+            "trac_name": self._trac_name,
+            "trbc_name": self._trbc_name,
             "traj_tt": self._traj_tt,
             "trav_tt": self._trav_tt,
+            "trac_tt": self._trac_tt,
             "trbj_tt": self._trbj_tt,
             "trbv_tt": self._trbv_tt,
+            "trbc_tt": self._trbc_tt,
             "tra_cdr3_tt": self._tra_cdr3_tt,
             "trb_cdr3_tt": self._trb_cdr3_tt,
         }
 
     @property
-    def cell_uuid(self):
-        return self._cell_uuid
+    def tcr_uuid(self):
+        return self._tcr_uuid
 
     @property
     def alpha_names(self) -> Tuple[str, str, str]:

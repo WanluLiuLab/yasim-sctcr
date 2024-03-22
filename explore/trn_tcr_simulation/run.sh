@@ -25,7 +25,7 @@ for name in cdna pep; do
     samtools faidx ens."${name}".fa
 done
 cd ..
-python -m yasim_sc generate_barcode -n 10 -o barcode.txt
+python -m yasim_sc generate_barcode -n 400 -o barcode.txt
 
 # TCR
 python -m yasim_sctcr generate_tcr_depth \
@@ -42,8 +42,15 @@ python -m yasim_sctcr rearrange_tcr \
     --tcr_cache_path tcr_cache.json \
     --cdr3_deletion_table_path data/cdr3_deletion_table.json \
     --cdr3_insertion_table_path data/cdr3_insertion_table.json \
+    --usage_bias_json data/usage_bias.json \
     -n 10 \
     -o sim_tcr
+python -m yasim_sctcr generate_tcr_clonal_expansion \
+    -b barcode.txt \
+    --src_tcr_stats_tsv sim_tcr.stats.tsv \
+    --dst_nt_fasta sim_t_cell.nt.fa \
+    --alpha 1
+
 
 python -m labw_utils.bioutils split_fasta sim_tcr.nt.fa
 python -m yasim art \

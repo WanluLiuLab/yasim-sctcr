@@ -27,26 +27,26 @@
       <excludeFolder url="file://$MODULE_DIR$/src/yasim_sctcr.egg-info" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.fa.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/pq" />
-      <excludeFolder url="file://$MODULE_DIR$/explore/test/out4msa.aa.fa.d" />
-      <excludeFolder url="file://$MODULE_DIR$/explore/test/out4msa.nt.fa.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/sim_tcr.json.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/bup" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/ens.cdna.fa.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.fq.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples_d.nt.fa.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/ref" />
-      <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data" />
-      <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/IMGT_V-QUEST_reference_directory" />
-      <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/blastdb" />
-      <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/ncbi-igblast-1.22.0" />
-      <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0" />
-      <excludeFolder url="file://$MODULE_DIR$/explore/test/raw_data/refseq" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/gene4msa" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.bwa.clair3.vcf.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/out4msa_samples.nt.bwa.merged.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/pq_cell" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/mut_aa.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_da/raw_data" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/out4msa.aa.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/out4msa.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/raw_data" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/raw_data/IMGT_V-QUEST_reference_directory" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/raw_data/blastdb" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/raw_data/ncbi-igblast-1.22.0" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/raw_data/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/raw_data/refseq" />
       <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/ref" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />

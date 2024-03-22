@@ -2,6 +2,10 @@
 rearrange_tcr.py -- Generate ground-truth TCR Contigs
 
 .. versionadded:: 0.1.0
+.. versionchanged:: 0.1.1
+    Dependencies on TCR gene name JSON dropped.
+    Removed generation of AA FASTA.
+    See :py:class:`yasim_sctcr.helper.tcr.TCell` for more details.
 """
 
 __all__ = ("main", "create_parser")
@@ -10,17 +14,15 @@ import argparse
 import json
 import os
 
-from labw_utils.commonutils.importer.tqdm_importer import tqdm
-from labw_utils.typing_importer import List, Dict
-
 from labw_utils.commonutils.appender import load_table_appender_class, TableAppenderConfig
+from labw_utils.commonutils.importer.tqdm_importer import tqdm
 from labw_utils.commonutils.lwio.safe_io import get_reader, get_writer
-from labw_utils.commonutils.lwio.tqdm_reader import get_tqdm_line_reader
+from labw_utils.commonutils.serializer.json import write_json_with_metadata
 from labw_utils.commonutils.stdlib_helper.argparse_helper import ArgumentParserWithEnhancedFormatHelp
 from labw_utils.commonutils.stdlib_helper.logger_helper import get_logger
-from yasim.helper.frontend import patch_frontend_argument_parser
-from yasim_sctcr.helper.tcr import TCRTranslationTableType, Cdr3InsertionTable, TCell, GenerationFailure
+from labw_utils.typing_importer import List, Dict, Optional
 from yasim_sctcr._main import get_sample_data_path
+from yasim_sctcr.helper.tcr import TCRTranslationTableType, Cdr3InsertionTable, TCell, GenerationFailure
 
 _lh = get_logger(__name__)
 
@@ -32,7 +34,8 @@ def create_parser() -> argparse.ArgumentParser:
     .. versionadded:: 0.1.0
     """
     parser = ArgumentParserWithEnhancedFormatHelp(
-        prog="python -m yasim_sctcr rearrange_tcr", description=__doc__.splitlines()[1]
+        prog="python -m yasim_sctcr rearrange_tcr",
+        description=__doc__.splitlines()[1],
     )
     parser.add_argument(
         "--tcr_cache_path",
@@ -61,7 +64,7 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--portion_non_productive",
         required=False,
-        help="Portion of Non-productive TCRs. Default to 3%.",
+        help="Portion of Non-productive TCRs. Default to 3 percent.",
         default=0.03,
         type=float,
     )
@@ -71,6 +74,13 @@ def create_parser() -> argparse.ArgumentParser:
         required=True,
         type=int,
         help="Number of TCRs to generate",
+    )
+    parser.add_argument(
+        "--usage_bias_json",
+        required=False,
+        type=str,
+        default=None,
+        help="TCR V/J usage bias JSON. Default to no bias.",
     )
     parser.add_argument(
         "-o",
@@ -97,6 +107,8 @@ def main(args: List[str]):
         cdr3_deletion_table_path=args.cdr3_deletion_table_path,
         cdr3_insertion_table_path=args.cdr3_insertion_table_path,
         num_tcrs=args.num_tcrs,
+        portion_non_productive=args.portion_non_productive,
+        usage_bias_json=args.usage_bias_json,
     )
 
 
@@ -106,6 +118,8 @@ def rearrange_tcr(
     output_base_path: str,
     cdr3_deletion_table_path: str,
     cdr3_insertion_table_path: str,
+    portion_non_productive: float,
+    usage_bias_json: Optional[str],
 ):
     """
     TODO: docs
@@ -133,63 +147,77 @@ def rearrange_tcr(
         except KeyError:
             _lh.error(f"TCR Gene Name {chr_name} invalid!")
             continue
+    if usage_bias_json is None:
+        _lh.warning("TCR usage bias not provided. Will generate TCRs without bias.")
+        usage_bias = {}
+        for chain_name in "ab":
+            usage_bias.update(
+                {
+                    f"{j_name}:{v_name}": 1
+                    for j_name in tcr_genelist[f"tr{chain_name}j_names"]
+                    for v_name in tcr_genelist[f"tr{chain_name}v_names"]
+                }
+            )
+    else:
+        with get_reader(usage_bias_json, is_binary=False) as r:
+            usage_bias = json.load(r)
+    usage_bias_tra = {k: v for k, v in usage_bias.items() if k.startswith("TRA")}
+    usage_bias_trb = {k: v for k, v in usage_bias.items() if k.startswith("TRB")}
 
     cdr3_insertion_table = Cdr3InsertionTable(cdr3_insertion_table_path)
     cdr3_deletion_table = {k: {int(_k): _v for _k, _v in v.items()} for k, v in cdr3_deletion_table.items()}
-    with get_writer(output_base_path + ".nt.fa") as nt_fasta_writer, get_writer(
-        output_base_path + ".aa.fa"
-    ) as aa_fasta_writer:
-        with load_table_appender_class("TSVTableAppender")(
-            filename=output_base_path + ".stats",
-            header=[
-                "UUID",
-                "TRAV",
-                "TRAJ",
-                "TRAC",
-                "TRBV",
-                "TRBJ",
-                "TRBC",
-                "ACDR3_AA",
-                "BCDR3_AA",
-                "ACDR3_NT",
-                "BCDR3_NT",
-                "ALPHA_AA",
-                "BETA_AA",
-                "ALPHA_NT",
-                "BETA_NT",
-            ],
-            tac=TableAppenderConfig(buffer_size=1024),
-        ) as appender:
-            for _ in tqdm(range(num_tcrs)):
-                while True:
-                    try:
-                        cell = TCell.from_gene_names(
-                            tcr_genelist=tcr_genelist,
-                            cdr3_deletion_table=cdr3_deletion_table,
-                            cdr3_insertion_table=cdr3_insertion_table,
-                            tcr_cache=tcr_cache,
-                        )
-                    except GenerationFailure as e:
-                        # e.fgr.as_tuple()
-                        n_failure += 1
-                        continue
-                    else:
-                        break
-                nt_fasta_writer.write(cell.to_nt_fasta_record() + "\n")
-                aa_fasta_writer.write(cell.to_aa_fasta_record() + "\n")
-                appender.append(
-                    [
-                        cell.cell_uuid,
-                        *cell.alpha_names,
-                        *cell.beta_names,
-                        *cell.cdr3_aa,
-                        *cell.cdr3_nt,
-                        cell.alpha_aa,
-                        cell.beta_aa,
-                        cell.alpha_nt,
-                        cell.beta_nt,
-                    ]
-                )
-                with get_writer(os.path.join(output_base_path + ".json.d", cell.cell_uuid + ".json")) as writer:
-                    json.dump(cell.to_dict(), writer)
+    with get_writer(output_base_path + ".nt.fa") as nt_fasta_writer, load_table_appender_class("TSVTableAppender")(
+        filename=output_base_path + ".stats",
+        header=[
+            "UUID",
+            "TRAV",
+            "TRAJ",
+            "TRAC",
+            "TRBV",
+            "TRBJ",
+            "TRBC",
+            "ACDR3_AA",
+            "BCDR3_AA",
+            "ACDR3_NT",
+            "BCDR3_NT",
+            "ALPHA_AA",
+            "BETA_AA",
+            "ALPHA_NT",
+            "BETA_NT",
+        ],
+        tac=TableAppenderConfig(buffer_size=1024),
+    ) as appender:
+        for i in tqdm(range(num_tcrs)):
+            while True:
+                try:
+                    cell = TCell.from_gene_names(
+                        tcr_genelist=tcr_genelist,
+                        cdr3_deletion_table=cdr3_deletion_table,
+                        cdr3_insertion_table=cdr3_insertion_table,
+                        tcr_cache=tcr_cache,
+                        usage_bias_tra=usage_bias_tra,
+                        usage_bias_trb=usage_bias_trb,
+                        tcr_uuid=f"TCR_{hex(i)}",
+                    )
+                except GenerationFailure as e:
+                    # e.fgr.as_tuple()
+                    n_failure += 1
+                    continue
+                else:
+                    break
+            nt_fasta_writer.write(cell.to_nt_fasta_record() + "\n")
+            appender.append(
+                [
+                    cell.tcr_uuid,
+                    *cell.alpha_names,
+                    *cell.beta_names,
+                    *cell.cdr3_aa,
+                    *cell.cdr3_nt,
+                    cell.alpha_aa,
+                    cell.beta_aa,
+                    cell.alpha_nt,
+                    cell.beta_nt,
+                ]
+            )
+            cell.save(os.path.join(output_base_path + ".json.d", cell.tcr_uuid + ".json"))
     _lh.info("Finished with %d failures", n_failure)

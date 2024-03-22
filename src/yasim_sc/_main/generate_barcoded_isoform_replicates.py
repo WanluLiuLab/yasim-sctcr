@@ -38,7 +38,13 @@ def create_parser() -> argparse.ArgumentParser:
         default=0.1,
     )
     parser.add_argument(
-        "-o", "--dest_dir_path", required=True, help="Path of output directory", nargs="?", type=str, action="store"
+        "-o",
+        "--dest_dir_path",
+        required=True,
+        help="Path of output directory",
+        nargs="?",
+        type=str,
+        action="store",
     )
     return parser
 
