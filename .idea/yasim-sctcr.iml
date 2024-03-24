@@ -48,6 +48,10 @@
       <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/raw_data/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0" />
       <excludeFolder url="file://$MODULE_DIR$/explore/compare_reference/raw_data/refseq" />
       <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/ref" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/C12_PBMC" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/CPInc_NC1" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/U4_PBMC" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/nc_CT1" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

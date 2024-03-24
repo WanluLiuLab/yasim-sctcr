@@ -106,10 +106,7 @@ def main(args: List[str]):
 
     with FastaWriter(argv.dst_nt_fasta) as faw, load_table_appender_class("TSVTableAppender")(
         filename=argv.dst_nt_fasta + ".stats",
-        header=[
-            "UUID",
-            "barcode",
-        ],
+        header=["UUID", "barcode"],
         tac=TableAppenderConfig(buffer_size=1024),
     ) as appender:
         for barcode_id, tcr_id in enumerate(barcode_uuid_map):
