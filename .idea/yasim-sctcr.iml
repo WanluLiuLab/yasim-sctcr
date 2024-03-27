@@ -52,6 +52,7 @@
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/CPInc_NC1" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/U4_PBMC" />
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/nc_CT1" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/sim_real_v1" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
