@@ -59,6 +59,8 @@ def run(fn: str):
             "sample": sample_name,
             "sample_level_barcode": fn_ser_item["barcode"],
             "sample_level_id": fn_ser_item_id,
+            "start_codon_pos": fn_ser_item["start_codon_pos"],
+            "stop_codon_pos": fn_ser_item["stop_codon_pos"],
         }
         # Those software reports TRAV matches TRBJ. Hilarious.
         # Will think the first one as correct.
@@ -116,3 +118,4 @@ if __name__ == "__main__":
         n_jobs=30,
         backend="loky",
     )
+    pd.read_parquet(glob.glob("./pq/*.parquet")).to_parquet("merged.parquet")

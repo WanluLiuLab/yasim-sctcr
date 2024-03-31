@@ -12,7 +12,6 @@ from labw_utils.commonutils.importer.tqdm_importer import tqdm
 from labw_utils.commonutils.lwio.safe_io import get_appender, get_writer
 
 if __name__ == "__main__":
-    # pd.read_parquet(glob.glob("./pq/*.parquet")).to_parquet("merged.parquet")
     gc.collect()
     with FastaWriter("all_contigs.fa") as contigs_faw, get_writer(
         "all_contigs.cellranger.bed", is_binary=False
