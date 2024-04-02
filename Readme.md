@@ -58,7 +58,7 @@ The initial release version is [0.1.0](https://pypi.org/project/yasim-sctcr/0.1.
 - 0.1.1: Addressed several problems proposed by the reviewers:
   - [X] Simulation for TRC gene added to `generate_tcr_cache` and `rearrange_tcr`.
   - [ ] Support the simulation of non-productive TCRs on a fixed ratio.
-  - [?] The scRNA-Seq simulator accepts outputs from other scNRA-Seq simulator.
+  - [X] The scRNA-Seq simulator accepts outputs from other scNRA-Seq simulator.
   - [X] Supported the distribution of TCR repertoire created by clonal expansion.
-  - [ ] scTCR-Seq-specific fragment length and bias.
+  - [?] scTCR-Seq-specific fragment length and bias.
   - [X] Supported V/J usage bias.

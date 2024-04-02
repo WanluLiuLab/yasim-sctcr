@@ -51,7 +51,6 @@ python -m yasim_sctcr generate_tcr_clonal_expansion \
     --dst_nt_fasta sim_t_cell.nt.fa \
     --alpha 1
 
-
 python -m labw_utils.bioutils split_fasta sim_tcr.nt.fa
 python -m yasim art \
     -F sim_tcr.nt.fa.d \

@@ -97,3 +97,17 @@ var_df_wide <- var_df %>%
 
 p <- upset(var_df_wide, unique(var_df$caller), name = "caller")
 ggsave("var_upset.pdf", p)
+
+stop_codon_df <- arrow::read_parquet("merged_pq_sc.parquet") %>%
+    dplyr::mutate(
+        v=as.character(v),
+        d=as.character(d),
+        j=as.character(j),
+        c=as.character(c)
+    ) %>%
+    tidyr::replace_na(list(v="NA", d="NA", j="NA", c="NA")) %>%
+    tidyr::pivot_longer(c(v, d, j, c), names_to = "Gene")
+p <- ggplot(stop_codon_df) +
+    geom_bar(aes(x=Gene, fill=value)) +
+    theme_bw()
+ggsave("stop_codon.pdf", p)

@@ -26,3 +26,18 @@ git ls-files |
         fi
     done
 wait
+
+#FormatR has bugs.
+#git ls-files |
+#    grep -v 'deps' |
+#    grep -v '.idea/' |
+#    grep -e '\.R$' |
+#    while read -r line; do
+#        if [ -e "${line}" ]; then
+#            {
+#                echo FormatR "${line}"
+#                echo "formatR::tidy_file(\"${line}\")" | Rscript /dev/stdin
+#            } &
+#        fi
+#    done
+#wait
