@@ -6,6 +6,7 @@ TODO: docs
 
 import glob
 import os
+import random
 from collections import defaultdict
 
 from labw_utils.commonutils.importer.tqdm_importer import tqdm
@@ -75,3 +76,19 @@ def sc_rna_seq_frontend(
     _lh.info(f"RNA SEQ: Status of errors: {dict(full_exception_dict)}")
     _lh.info("RNA SEQ: Simulation finished successfully")
     return 0
+
+
+def generate_barcodes(barcode_length: int, n_cells: int) -> str:
+    """
+    TODO: docs
+
+    .. versionadded:: 0.1.0
+    """
+    _generated_barcodes = set()
+    num_generated = 0
+    while num_generated < n_cells:
+        new_barcode = "".join(map(lambda _: random.choice("ATCG"), range(barcode_length)))
+        if new_barcode not in _generated_barcodes:
+            _generated_barcodes.add(new_barcode)
+            yield new_barcode
+            num_generated += 1

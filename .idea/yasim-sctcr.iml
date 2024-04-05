@@ -56,6 +56,11 @@
       <excludeFolder url="file://$MODULE_DIR$/explore/huardb_gex/backup/sim_real_v1" />
       <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/gex_sim" />
       <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/raw_data" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0043_Blood_10x.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0125_Cerebrospinal-Fluid_GSE134577.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0148_Decidua_EBI.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0196_Kidney_GSE109564.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0223_Muscle_GSE134355.sim.d" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -63,8 +68,5 @@
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />
     <option name="myDocStringFormat" value="Plain" />
-  </component>
-  <component name="SonarLintModuleSettings">
-    <option name="uniqueId" value="6fca7001-2272-43b1-82b6-bea286592e27" />
   </component>
 </module>
