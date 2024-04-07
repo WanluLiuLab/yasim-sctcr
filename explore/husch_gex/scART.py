@@ -47,7 +47,9 @@ def art_salmon(colname: str, sample_name: str) -> None:
             "--pe_frag_dist_mean",
             "500",
             "--no_sam",
-        ]
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     ).wait()
     fq1_path = f"{art_out_prefix}_1.fq"
     fq2_path = f"{art_out_prefix}_2.fq"
@@ -76,7 +78,9 @@ def art_salmon(colname: str, sample_name: str) -> None:
             "1",
             "--geneMap",
             MANE_MAPPING_PATH,
-        ]
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     ).wait()
 
 
@@ -92,16 +96,21 @@ def run_sample(_sample_name: str):
     odf = pd.read_csv(MANE_SUMMARY_PAH, sep="\t")[["symbol"]].set_index("symbol")
 
     for colname in barcodes:
+        salmon_csv_path = os.path.join(
+            f"{_sample_name}.sim.d",
+            "gex.d",
+            f"{colname}_salmon.d",
+            "quant.genes.sf",
+        )
+        if not os.path.exists(salmon_csv_path):
+            continue
         odf = odf.join(
             pd.read_csv(
-                os.path.join(
-                    f"{_sample_name}.sim.d",
-                    "gex.d",
-                    f"{colname}_salmon.d",
-                    "quant.genes.sf",
-                ),
+                salmon_csv_path,
                 sep="\t",
-            )[["Name", "NumReads"]].set_index("Name"),
+            )[
+                ["Name", "NumReads"]
+            ].set_index("Name"),
             how="left",
         ).rename(columns={"NumReads": colname})
     odf.reset_index().rename(columns={"index": "FEATURE"}).to_parquet(f"{_sample_name}.art_salmon.parquet")
