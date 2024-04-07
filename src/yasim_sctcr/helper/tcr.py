@@ -90,6 +90,7 @@ class FullGenerationRecord:
 
     def __init__(
         self,
+        *,
         uuid: str,
         trav: str,
         traj: str,
@@ -262,6 +263,7 @@ class TCell(AbstractJSONSerializable):
     @classmethod
     def from_gene_names(
         cls,
+        *,
         tcr_genelist: Dict[str, List[str]],
         cdr3_deletion_table: Cdr3DeletionTableType,
         cdr3_insertion_table: Cdr3InsertionTable,
@@ -269,6 +271,7 @@ class TCell(AbstractJSONSerializable):
         usage_bias_tra: Dict[str, int],
         usage_bias_trb: Dict[str, int],
         tcr_uuid: str,
+        is_productive: bool,
     ):
         def choose_name_jv(
             chain_type: Literal["a", "b"]
@@ -306,12 +309,35 @@ class TCell(AbstractJSONSerializable):
                 raise GenerationFailure(fgr)
             return tr_cdr3_tt, trv_tt, trj_tt
 
-        def ensure_can_translate(tt: TCRTranslationTableType) -> TCRTranslationTableType:
-            ret_tt = []
-            for tt_a in tt:
+        def clip_ltr(tt: TCRTranslationTableType) -> TCRTranslationTableType:
+            """
+            TODO: This function clips 5' UTRs only. May also needs to clip 3' UTRs.
+            """
+            i = 0
+            for i in range(len(tt)):
+                tt_a = tt[i]
                 if "-" in tt_a[0] or tt_a[1] in ("*", "-") or tt_a[2] in ("*", "-"):
                     continue
-                ret_tt.append(tt_a)
+                else:
+                    break
+            return tt[i:]
+
+        def productive_nonproductive_adjustment(tt: TCRTranslationTableType) -> TCRTranslationTableType:
+            ret_tt = []
+            if is_productive:
+                for tt_a in tt:
+                    if "-" in tt_a[0] or tt_a[1] in ("*", "-") or tt_a[2] in ("*", "-"):
+                        continue
+                    ret_tt.append(tt_a)
+            else:
+                for tt_a in tt:
+                    if "-" in tt_a[0] or tt_a[1] == "-" or tt_a[2] == "-":
+                        tt_a[1] = "*"
+                        tt_a[2] = "*"
+                        tt_a[0] = tt_a[0].replace("-", "")
+                    if tt_a[0] == "":
+                        continue
+                    ret_tt.append(tt_a)
             return ret_tt
 
         (traj_name, traj_tt), (trav_name, trav_tt) = choose_name_jv("a")
@@ -380,17 +406,18 @@ class TCell(AbstractJSONSerializable):
             "W" if traj_name.upper() in {"TRAJ33", "TRAJ38", "TRAJ55"} else "F",
         )
         trb_cdr3_tt, trbv_tt, trbj_tt = clip_aa(trb_cdr3_tt, trbv_tt, trbj_tt, "F")
+        trac_tt = trac_tt[:15]
+        trbc_tt = trbc_tt[:15]
+        tra_cdr3_tt = productive_nonproductive_adjustment(clip_ltr(tra_cdr3_tt))
+        trav_tt = productive_nonproductive_adjustment(clip_ltr(trav_tt))
+        traj_tt = productive_nonproductive_adjustment(clip_ltr(traj_tt))
+        trac_tt = productive_nonproductive_adjustment(clip_ltr(trac_tt))
+        trb_cdr3_tt = productive_nonproductive_adjustment(clip_ltr(trb_cdr3_tt))
+        trbv_tt = productive_nonproductive_adjustment(clip_ltr(trbv_tt))
+        trbj_tt = productive_nonproductive_adjustment(clip_ltr(trbj_tt))
+        trbc_tt = productive_nonproductive_adjustment(clip_ltr(trbc_tt))
 
-        tra_cdr3_tt = ensure_can_translate(tra_cdr3_tt)
-        trav_tt = ensure_can_translate(trav_tt)
-        traj_tt = ensure_can_translate(traj_tt)
-        trac_tt = ensure_can_translate(trac_tt[:15])  # Reduced C-gene length conserved from empirical data
-        trb_cdr3_tt = ensure_can_translate(trb_cdr3_tt)
-        trbv_tt = ensure_can_translate(trbv_tt)
-        trbj_tt = ensure_can_translate(trbj_tt)
-        trbc_tt = ensure_can_translate(trbc_tt[:17])  # Reduced C-gene length conserved from empirical data
-
-        return cls(
+        retc = cls(
             tcr_uuid=tcr_uuid,
             trav_tt=trav_tt,
             traj_tt=traj_tt,
@@ -407,6 +434,11 @@ class TCell(AbstractJSONSerializable):
             trac_tt=trac_tt,
             trbc_tt=trbc_tt,
         )
+        if is_productive and ("*" in retc.alpha_aa or "*" in retc.beta_aa):
+            raise GenerationFailure(fgr)
+        if not is_productive and not ("*" in retc.alpha_aa or "*" in retc.beta_aa):
+            raise GenerationFailure(fgr)
+        return retc
 
     def to_nt_fasta_record(self) -> str:
         return "\n".join(
