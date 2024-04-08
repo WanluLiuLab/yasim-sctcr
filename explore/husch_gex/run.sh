@@ -30,3 +30,5 @@ mkdir -p gex_sim
 mv ./*.parquet gex_sim
 tar cvf gex_sim.tar gex_sim
 xz -9 -T0 -vv gex_sim.tar
+
+# https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/archive/monthly/tsv/hgnc_complete_set-03-01.txt

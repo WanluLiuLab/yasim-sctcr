@@ -27,7 +27,7 @@ if __name__ == "__main__":
         )
         dfm = df.to_numpy()
         df /= dfm.mean() * 0.2
-        df.reset_index().rename(columns={"index": "FEATURE"}).to_parquet(f"{sample_name}_sim_dw_sampled.parquet")
+        df.reset_index().rename(columns={"RefSeq_nuc": "FEATURE"}).to_parquet(f"{sample_name}_sim_dw_sampled.parquet")
         rm_rf(f"{sample_name}.sim.d")
         os.makedirs(f"{sample_name}.sim.d")
 
