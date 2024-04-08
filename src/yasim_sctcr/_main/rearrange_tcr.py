@@ -13,6 +13,7 @@ __all__ = ("main", "create_parser")
 import argparse
 import json
 import os
+import random
 
 from labw_utils.commonutils.appender import load_table_appender_class, TableAppenderConfig
 from labw_utils.commonutils.importer.tqdm_importer import tqdm
@@ -165,6 +166,8 @@ def rearrange_tcr(
 
     cdr3_insertion_table = Cdr3InsertionTable(cdr3_insertion_table_path)
     cdr3_deletion_table = {k: {int(_k): _v for _k, _v in v.items()} for k, v in cdr3_deletion_table.items()}
+    rng = random.SystemRandom()
+    num_productive = 0
     with get_writer(output_base_path + ".nt.fa") as nt_fasta_writer, load_table_appender_class("TSVTableAppender")(
         filename=output_base_path + ".stats",
         header=[
@@ -187,6 +190,8 @@ def rearrange_tcr(
         tac=TableAppenderConfig(buffer_size=1024),
     ) as appender:
         for i in tqdm(range(num_tcrs)):
+            is_productive = rng.random() >= portion_non_productive
+            num_productive += 1 if is_productive else 0
             while True:
                 try:
                     cell = TCell.from_gene_names(
@@ -197,6 +202,7 @@ def rearrange_tcr(
                         usage_bias_tra=usage_bias_tra,
                         usage_bias_trb=usage_bias_trb,
                         tcr_uuid=f"TCR_{hex(i)}",
+                        is_productive=is_productive,
                     )
                 except GenerationFailure as e:
                     # e.fgr.as_tuple()
@@ -219,4 +225,5 @@ def rearrange_tcr(
                 ]
             )
             cell.save(os.path.join(output_base_path + ".json.d", cell.tcr_uuid + ".json"))
+    _lh.info("Generated with %d TCRs where %d are productive", num_tcrs, num_productive)
     _lh.info("Finished with %d failures", n_failure)
