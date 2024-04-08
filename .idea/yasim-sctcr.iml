@@ -62,6 +62,20 @@
       <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/to_jiashan/HU_0148_Decidua_EBI.sim.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/to_jiashan/HU_0196_Kidney_GSE109564.sim.d" />
       <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/to_jiashan/HU_0223_Muscle_GSE134355.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0043_Blood_10x.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0125_Cerebrospinal-Fluid_GSE134577.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0148_Decidua_EBI.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0196_Kidney_GSE109564.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/HU_0223_Muscle_GSE134355.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/figs" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/parquets" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/husch_gex/ref" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/sim_t_cell.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/sim_tcr.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/sim_tcr_125.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/trn_v1.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/trn_v1.d/HU_0043_Blood_10x.sim.d" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/trn_v1.d/sim_tcr_125.d" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -4,6 +4,7 @@ import pandas as pd
 
 from labw_utils.commonutils.lwio.safe_io import get_writer
 from labw_utils.commonutils.stdlib_helper.shutil_helper import rm_rf
+from labw_utils.mlutils.ndarray_helper import describe
 from yasim_sc.helper.rna_seq import generate_barcodes
 
 sample_names = [
@@ -14,20 +15,23 @@ sample_names = [
     "HU_0125_Cerebrospinal-Fluid_GSE134577",
 ]
 
-MANE_SUMMARY_PAH = "MANE.GRCh38.v1.3.summary.txt"
+MANE_SUMMARY_PAH = "ref/hgnc_salmon_genemap.tsv"
 
 if __name__ == "__main__":
-    mane_pd = pd.read_csv(MANE_SUMMARY_PAH, sep="\t")[["symbol", "RefSeq_nuc"]].set_index("symbol")
+    mane_pd = pd.read_csv(MANE_SUMMARY_PAH, sep="\t", names=["ensembl", "symbol"]).set_index("symbol")
     for sample_name in sample_names:
         print(sample_name)
         df = (
-            mane_pd.join(pd.read_parquet(f"{sample_name}_sim.parquet").set_index("FEATURE"), how="inner")
+            mane_pd.join(pd.read_parquet(f"parquets/{sample_name}_sim.parquet").set_index("FEATURE"), how="inner")
             .sample(n=500)
-            .set_index("RefSeq_nuc")
+            .drop(columns="ensembl")
         )
         dfm = df.to_numpy()
-        df /= dfm.mean() * 0.2
-        df.reset_index().rename(columns={"RefSeq_nuc": "FEATURE"}).to_parquet(f"{sample_name}_sim_dw_sampled.parquet")
+        df /= dfm.mean() * 1
+        print(describe(df.to_numpy()))
+        gene_lvl_dwsampled_df = df.reset_index().rename(columns={"symbol": "FEATURE"})
+        gene_lvl_dwsampled_df.to_parquet(f"parquets/{sample_name}_sim_dw_sampled.parquet")
+        df = mane_pd.join(gene_lvl_dwsampled_df.set_index("FEATURE"), how="inner").set_index("ensembl")
         rm_rf(f"{sample_name}.sim.d")
         os.makedirs(f"{sample_name}.sim.d")
 

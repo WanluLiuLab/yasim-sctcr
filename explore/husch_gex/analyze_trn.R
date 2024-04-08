@@ -19,7 +19,7 @@ sample_names <- c(
 for (sample_name in sample_names) {
     sos[[sample_name]] <- list(
         real = Seurat::CreateSeuratObject(
-            arrow::read_parquet(sprintf("%s_real.parquet", sample_name), show_col_types = FALSE) %>%
+            arrow::read_parquet(sprintf("parquets/%s_real.parquet", sample_name), show_col_types = FALSE) %>%
                 mut_table(),
             project = "real",
             min.cells = 3,
@@ -27,7 +27,7 @@ for (sample_name in sample_names) {
         ) %>%
             AddMetaData("real", col.name = "dtype"),
         sim = Seurat::CreateSeuratObject(
-            arrow::read_parquet(sprintf("%s_sim.parquet", sample_name), show_col_types = FALSE) %>%
+            arrow::read_parquet(sprintf("parquets/%s_sim.parquet", sample_name), show_col_types = FALSE) %>%
                 mut_table(),
             project = "sim",
             min.cells = 3,
@@ -59,6 +59,6 @@ for (sample_name in sample_names) {
         facet_grid(. ~ cell_type) +
         scale_color_manual(values = c("#1d3557", "#ff8fab")) +
         theme_bw()
-    ggsave(sprintf("%s_data.pdf", sample_name), p, width = 11, height = 5)
+    ggsave(sprintf("figs/%s_data.pdf", sample_name), p, width = 11, height = 5)
 }
 

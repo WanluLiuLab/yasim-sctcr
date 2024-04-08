@@ -9,7 +9,6 @@ __all__ = ("main", "create_parser")
 import argparse
 import itertools
 import json
-import sys
 
 from labw_utils.bioutils.datastructure.fasta_view import FastaViewFactory
 from labw_utils.commonutils.importer.tqdm_importer import tqdm
@@ -29,7 +28,8 @@ def create_parser() -> argparse.ArgumentParser:
     .. versionadded:: 0.1.0
     """
     parser = ArgumentParserWithEnhancedFormatHelp(
-        prog="python -m yasim_sctcr generate_tcr_cache", description=__doc__.splitlines()[1]
+        prog="python -m yasim_sctcr generate_tcr_cache",
+        description=__doc__.splitlines()[1],
     )
     parser.add_argument(
         "--tcr_cdna_fa_path",

@@ -5,4 +5,5 @@ trust4*/
 *.out
 times
 /ref
+*.d
 

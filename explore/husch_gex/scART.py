@@ -2,20 +2,19 @@ import concurrent.futures
 import glob
 import os
 import shutil
-import subprocess
 
 import pandas as pd
 
 from labw_utils.commonutils.lwio.tqdm_reader import get_tqdm_line_reader
+from labw_utils.commonutils.stdlib_helper.parallel_helper import easyexec
 from labw_utils.commonutils.stdlib_helper.shutil_helper import rm_rf
 
 ART_PATH = "/slurm/home/yrd/liulab/yuzhejian/art"
 SALMON_PATH = "/slurm/home/yrd/liulab/yuzhejian/conda/envs/yasim-salmon/bin/salmon"
 ART_PROFILE_PATH = "/slurm/home/yrd/liulab/yuzhejian/Illumina_profiles"
-MANE_FA_PATH = "MANE.GRCh38.v1.3.refseq_rna.fna"
-MANE_SALMON_IDX_PATH = "MANE.GRCh38.v1.3.refseq_rna.salmon_idx"
-MANE_MAPPING_PATH = "MANE_salmon_genemap.tsv"
-MANE_SUMMARY_PAH = "MANE.GRCh38.v1.3.summary.txt"
+MANE_FA_PATH = "ref/MANE.GRCh38.v1.3.ensembl_rna.fna"
+MANE_SALMON_IDX_PATH = "ref/MANE.GRCh38.v1.3.refseq_rna.salmon_idx"
+MANE_MAPPING_PATH = "ref/hgnc_salmon_genemap.tsv"
 NJOBS = 10
 
 
@@ -26,7 +25,7 @@ def art_salmon(colname: str, sample_name: str) -> None:
     salmon_out_dir = out_prefix + "_salmon.d"
     art_out_dir = art_out_prefix + ".d"
     print(f"ART {colname}")
-    subprocess.Popen(
+    easyexec(
         [
             ART_PATH,
             "--qual_file_1",
@@ -50,9 +49,7 @@ def art_salmon(colname: str, sample_name: str) -> None:
             "500",
             "--no_sam",
         ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    ).wait()
+    )
     fq1_path = f"{art_out_prefix}_1.fq"
     fq2_path = f"{art_out_prefix}_2.fq"
     with open(fq1_path, "w") as faw1, open(fq2_path, "w") as faw2:
@@ -62,7 +59,7 @@ def art_salmon(colname: str, sample_name: str) -> None:
             shutil.copyfileobj(open(fn), faw2)
     shutil.rmtree(art_out_dir)
     print(f"SALMON {colname}")
-    subprocess.Popen(
+    easyexec(
         [
             SALMON_PATH,
             "--no-version-check",
@@ -82,9 +79,7 @@ def art_salmon(colname: str, sample_name: str) -> None:
             "--geneMap",
             MANE_MAPPING_PATH,
         ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    ).wait()
+    )
     print(f"FIN {colname}")
 
 
@@ -97,15 +92,11 @@ def run_sample(_sample_name: str):
     with concurrent.futures.ThreadPoolExecutor(max_workers=NJOBS) as pool:
         for barcode in barcodes:
             pool.submit(art_salmon, barcode, _sample_name)
-    odf = pd.read_csv(MANE_SUMMARY_PAH, sep="\t")[["symbol"]].set_index("symbol")
+    odf = pd.read_csv(MANE_MAPPING_PATH, sep="\t", names=["ensembl", "symbol"])[["symbol"]].set_index("symbol")
 
     for colname in barcodes:
-        salmon_csv_path = os.path.join(
-            f"{_sample_name}.sim.d",
-            "gex.d",
-            f"{colname}_salmon.d",
-            "quant.genes.sf",
-        )
+        salmon_dir_path = os.path.join(f"{_sample_name}.sim.d", "gex.d", f"{colname}_salmon.d")
+        salmon_csv_path = os.path.join(salmon_dir_path, "quant.genes.sf")
         if not os.path.exists(salmon_csv_path):
             continue
         odf = odf.join(
@@ -117,10 +108,13 @@ def run_sample(_sample_name: str):
             ].set_index("Name"),
             how="left",
         ).rename(columns={"NumReads": colname})
-    odf.reset_index().rename(columns={"index": "FEATURE"}).to_parquet(f"{_sample_name}.art_salmon.parquet")
+        rm_rf(salmon_dir_path)
+    odf.reset_index().rename(columns={"symbol": "FEATURE"}).to_parquet(f"parquets/{_sample_name}.art_salmon.parquet")
 
 
 if __name__ == "__main__":
+    if os.path.exists(MANE_SALMON_IDX_PATH):
+        easyexec([SALMON_PATH, "index", "-t", MANE_FA_PATH, "-i", MANE_SALMON_IDX_PATH, "-p", str(NJOBS)])
     for _sample_name in [
         # "HU_0196_Kidney_GSE109564",
         # "HU_0043_Blood_10x",
@@ -128,4 +122,5 @@ if __name__ == "__main__":
         # "HU_0223_Muscle_GSE134355",
         # "HU_0125_Cerebrospinal-Fluid_GSE134577",
     ]:
+        rm_rf(os.path.join(f"{_sample_name}.sim.d", "gex.d"))
         run_sample(_sample_name)

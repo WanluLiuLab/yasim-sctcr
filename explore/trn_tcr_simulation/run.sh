@@ -29,7 +29,7 @@ python -m yasim_sc generate_barcode -n 400 -o barcode.txt
 
 # TCR
 python -m yasim_sctcr generate_tcr_depth \
-    -b barcode.txt \
+    -b /home/yuzj/Documents/yasim-sctcr/explore/husch_gex/to_jiashan/HU_0043_Blood_10x.sim.d/t_cell_bc.txt \
     -o tcr_depth.tsv \
     -d 400
 python -m yasim_sctcr generate_tcr_cache \
@@ -46,12 +46,24 @@ python -m yasim_sctcr rearrange_tcr \
     -n 10 \
     -o sim_tcr
 python -m yasim_sctcr generate_tcr_clonal_expansion \
-    -b barcode.txt \
+    -b /home/yuzj/Documents/yasim-sctcr/explore/husch_gex/to_jiashan/HU_0043_Blood_10x.sim.d/t_cell_bc.txt \
     --src_tcr_stats_tsv sim_tcr.stats.tsv \
     --dst_nt_fasta sim_t_cell.nt.fa \
     --alpha 1
 
-python -m labw_utils.bioutils split_fasta sim_tcr.nt.fa
+python -m labw_utils.bioutils split_fasta sim_t_cell.nt.fa
+python -m yasim art \
+    -F sim_t_cell.nt.fa.d \
+    -o sim_tcr_125 \
+    --sequencer_name HS25 \
+    --read_length 125 \
+    -d tcr_depth.tsv \
+    -e art_illumina \
+    --is_pair_end \
+    --pair_end_fragment_length_mean 600 \
+    --pair_end_fragment_length_std 50 \
+    -j 20
+
 python -m yasim art \
     -F sim_tcr.nt.fa.d \
     -o sim_tcr_50 \

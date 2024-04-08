@@ -2,7 +2,7 @@ library("Seurat")
 library("tidyverse")
 library("UpSetR")
 
-hgnc_genes <- (readr::read_tsv("raw_data/hgnc_complete_set.txt", show_col_types = FALSE) %>%
+hgnc_genes <- (readr::read_tsv("ref/hgnc_complete_set_2024-03-01.tsv", show_col_types = FALSE) %>%
                    dplyr::filter(locus_group == "protein-coding gene") %>%
                    dplyr::filter(!is.na(mane_select)) %>%
                    dplyr::select(symbol))$symbol
@@ -54,7 +54,7 @@ orig_genes_table_wide <- orig_genes_table %>%
     as.data.frame()
 row.names(orig_genes_table_wide) <- orig_genes_table_wide$gene_name
 orig_genes_table_wide$gene_name <- NULL
-pdf("genes_share.pdf", width=10, height=10)
+pdf("figs/genes_share.pdf", width=10, height=10)
 UpSetR::upset(orig_genes_table_wide, order.by = "freq")
 dev.off()
 
@@ -82,7 +82,7 @@ p <- ggplot(cell_level_qc_df_long) +
     geom_violin(aes(y=sample_name, x=value)) +
     facet_wrap(name~., scales="free") +
     theme_bw()
-ggsave("ncount_nfeature.pdf",p, width=10, height=5)
+ggsave("figs/ncount_nfeature.pdf",p, width=10, height=5)
 
 
 for (sample_name in sample_names) {
@@ -100,7 +100,7 @@ for (sample_name in sample_names) {
     p <- ggplot(umap_data) +
         geom_point(aes(x=umap_1, y=umap_2, color=is_t_cell), size=0.5, alpha=0.1) +
         theme_bw()
-    ggsave(sprintf("%s_ctype.pdf", sample_name), p, width = 6,height = 5)
+    ggsave(sprintf("figs/%s_ctype.pdf", sample_name), p, width = 6,height = 5)
 }
 
 saveRDS(object = sos, file = "sos_post_qc.rds")

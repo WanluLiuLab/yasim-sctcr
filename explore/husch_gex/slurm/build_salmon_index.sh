@@ -8,7 +8,6 @@
 #SBATCH --error=logs/%j.err
 #SBATCH --time=48:00:00
 
-
 eval "$("${HOME}"/conda/condabin/conda shell.bash hook)"
 conda activate yasim-salmon
 set -ue

@@ -1,4 +1,3 @@
-options(error = function() traceback(20))
 library("scDesign2")
 library("Seurat")
 library("tidyverse")
@@ -16,7 +15,7 @@ w_sample <- function(x, this_sample_name, data_type){
     colnames(x) <- paste(colnames(x), as.character(seq_len(ncol(x))), sep="_")
     x %>%
         tibble::as_tibble(rownames = "FEATURE") %>%
-        arrow::write_parquet(sprintf("%s_%s.parquet", this_sample_name, data_type))
+        arrow::write_parquet(sprintf("parquets/%s_%s.parquet", this_sample_name, data_type))
 }
 sos_post_qc <- readRDS("./sos_post_qc.rds")
 
