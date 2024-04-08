@@ -9,13 +9,14 @@ import pandas as pd
 from labw_utils.commonutils.lwio.tqdm_reader import get_tqdm_line_reader
 from labw_utils.commonutils.stdlib_helper.shutil_helper import rm_rf
 
-ART_PATH = "/home/yuzj/Documents/pbsim3_modern/build/art"
-SALMON_PATH = "/opt/yuzj/conda/envs/yasim-salmon/bin/salmon"
-ART_PROFILE_PATH = "/home/yuzj/Documents/pbsim3_modern/art/Illumina_profiles"
-MANE_FA_PATH = "/home/yuzj/Documents/pbsim3_modern/raw_data/MANE.GRCh38.v1.3.refseq_rna.fna"
-MANE_SALMON_IDX_PATH = "/home/yuzj/Documents/pbsim3_modern/raw_data/MANE.GRCh38.v1.3.refseq_rna.salmon_idx"
-MANE_MAPPING_PATH = "/home/yuzj/Documents/pbsim3_modern/raw_data/MANE_salmon_genemap.tsv"
-MANE_SUMMARY_PAH = "/home/yuzj/Documents/pbsim3_modern/raw_data/MANE.GRCh38.v1.3.summary.txt"
+ART_PATH = "/slurm/home/yrd/liulab/yuzhejian/art"
+SALMON_PATH = "/slurm/home/yrd/liulab/yuzhejian/conda/envs/yasim-salmon/bin/salmon"
+ART_PROFILE_PATH = "/slurm/home/yrd/liulab/yuzhejian/Illumina_profiles"
+MANE_FA_PATH = "MANE.GRCh38.v1.3.refseq_rna.fna"
+MANE_SALMON_IDX_PATH = "MANE.GRCh38.v1.3.refseq_rna.salmon_idx"
+MANE_MAPPING_PATH = "MANE_salmon_genemap.tsv"
+MANE_SUMMARY_PAH = "MANE.GRCh38.v1.3.summary.txt"
+NJOBS = 10
 
 
 def art_salmon(colname: str, sample_name: str) -> None:
@@ -24,6 +25,7 @@ def art_salmon(colname: str, sample_name: str) -> None:
     art_out_prefix = out_prefix + "_art"
     salmon_out_dir = out_prefix + "_salmon.d"
     art_out_dir = art_out_prefix + ".d"
+    print(f"ART {colname}")
     subprocess.Popen(
         [
             ART_PATH,
@@ -59,6 +61,7 @@ def art_salmon(colname: str, sample_name: str) -> None:
         for fn in glob.glob(f"{art_out_dir}/*_2.fq"):
             shutil.copyfileobj(open(fn), faw2)
     shutil.rmtree(art_out_dir)
+    print(f"SALMON {colname}")
     subprocess.Popen(
         [
             SALMON_PATH,
@@ -82,6 +85,7 @@ def art_salmon(colname: str, sample_name: str) -> None:
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     ).wait()
+    print(f"FIN {colname}")
 
 
 def run_sample(_sample_name: str):
@@ -90,7 +94,7 @@ def run_sample(_sample_name: str):
         *get_tqdm_line_reader(os.path.join(f"{_sample_name}.sim.d", "t_cell_bc.txt")),
     ]
     rm_rf(os.path.join(f"{_sample_name}.sim.d", "gex.d"))
-    with concurrent.futures.ThreadPoolExecutor(max_workers=40) as pool:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=NJOBS) as pool:
         for barcode in barcodes:
             pool.submit(art_salmon, barcode, _sample_name)
     odf = pd.read_csv(MANE_SUMMARY_PAH, sep="\t")[["symbol"]].set_index("symbol")
@@ -118,10 +122,10 @@ def run_sample(_sample_name: str):
 
 if __name__ == "__main__":
     for _sample_name in [
-        "HU_0196_Kidney_GSE109564",
-        "HU_0043_Blood_10x",
-        "HU_0148_Decidua_EBI",
-        "HU_0223_Muscle_GSE134355",
-        "HU_0125_Cerebrospinal-Fluid_GSE134577",
+        # "HU_0196_Kidney_GSE109564",
+        # "HU_0043_Blood_10x",
+        # "HU_0148_Decidua_EBI",
+        # "HU_0223_Muscle_GSE134355",
+        # "HU_0125_Cerebrospinal-Fluid_GSE134577",
     ]:
         run_sample(_sample_name)

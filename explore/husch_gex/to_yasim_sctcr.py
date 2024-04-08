@@ -14,7 +14,7 @@ sample_names = [
     "HU_0125_Cerebrospinal-Fluid_GSE134577",
 ]
 
-MANE_SUMMARY_PAH = "/home/yuzj/Documents/pbsim3_modern/raw_data/MANE.GRCh38.v1.3.summary.txt"
+MANE_SUMMARY_PAH = "MANE.GRCh38.v1.3.summary.txt"
 
 if __name__ == "__main__":
     mane_pd = pd.read_csv(MANE_SUMMARY_PAH, sep="\t")[["symbol", "RefSeq_nuc"]].set_index("symbol")

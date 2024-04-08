@@ -1,2 +1,4 @@
 */
 *.rds
+*.fna
+!slurm
