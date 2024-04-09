@@ -9,7 +9,6 @@ import os
 import random
 import re
 from collections import defaultdict
-from typing import Optional
 
 import pandas as pd
 
@@ -22,25 +21,6 @@ from labw_utils.typing_importer import List
 from yasim_sc.helper.rna_seq import generate_barcodes
 
 _lh = get_logger(__name__)
-
-
-def try_getline(prompt: str) -> Optional[str]:
-    getv = None
-    while True:
-        try:
-            getv = input(f"{prompt}> ")
-            break
-        except KeyboardInterrupt:
-            print("")
-            continue
-        except EOFError:
-            print("")
-            return None
-    getv = getv.strip()
-    if getv == "exit":
-        return None
-    print(getv)
-    return getv
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -60,7 +40,12 @@ def create_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--src_sc_data",
-        help="A TSV or PARQUET file, one cell per column, with gene names on 'FEATURE' column",
+        help="A TSV or Apache Parquet file, one cell per column, with gene names on 'FEATURE' column. "
+        "The column names should contain cell type information "
+        "that allows distinguish between T-cells and other cells using regular expression. "
+        "Notice that if you want to read scRNA-Seq files in Apache Parquet format, "
+        "you need to install Apache Arrow or FastParquet."
+        "If you're using anndata, please convert it using `convert_anndata`.",
         required=True,
     )
     parser.add_argument(

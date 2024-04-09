@@ -12,3 +12,17 @@ It is recommended for users to provide their own count matrix.
 """
 
 description = __doc__.splitlines()[1]
+try:
+    import labw_utils
+
+    _labw_utils_version = labw_utils.__version__
+
+except ImportError as e:
+    raise e
+
+from labw_utils import UnmetDependenciesError
+
+try:
+    import yasim
+except ImportError as e:
+    raise UnmetDependenciesError("yasim") from e

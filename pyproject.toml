@@ -8,8 +8,9 @@ build-backend = "setuptools.build_meta"
 name = "yasim_sctcr"
 description = "yasim_sctcr -- Yet Another SIMulator for Single-Cell T-Cell Receptor Sequencing (scTCR-Seq)"
 authors = [
-    { name = "YU Zhejian", email = "Zhejian.19@intl.zju.edu.cn" },
+    { name = "YU Zhejian", email = "Zhejian.23@intl.zju.edu.cn" },
     { name = "TIAN Ruonan", email = "Ruonan.21@intl.zju.edu.cn" },
+    { name = "WU Jiaxin", email = "Jiaxin2.22@intl.zju.edu.cn" },
     { name = "LIU Wanlu (Correspondence)", email = "wanluliu@intl.zju.edu.cn" }
 ]
 classifiers = [
