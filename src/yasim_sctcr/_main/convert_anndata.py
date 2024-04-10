@@ -7,6 +7,7 @@ convert_anndata -- Convert Scanpy AnnData object to TSV/Apache Parquet for ``sca
 
 import argparse
 import os
+import sys
 
 from labw_utils import UnmetDependenciesError
 from labw_utils.commonutils.stdlib_helper.argparse_helper import ArgumentParserWithEnhancedFormatHelp
@@ -32,6 +33,51 @@ import pandas as pd
 from labw_utils.typing_importer import List
 
 _lh = get_logger(__name__)
+
+SUPPORTING_EXTENSIONS = (
+    "h5ad",
+    "csv",
+    "txt",
+    "tab",
+    "data",
+    "loom",
+    "mtx",
+    "gz",
+    "npz",
+    "zarr",
+)
+
+
+def read_anndata(filename: str) -> ad.AnnData:
+    """
+    Read various AnnData supporting formats.
+
+    .. author:: WU JX
+    """
+    file_format = filename.split(".")[-1].lower()
+
+    if file_format == "h5ad":
+        adata = ad.read_h5ad(filename)
+    elif file_format == "csv":
+        adata = ad.read_csv(filename)
+    elif file_format in ["txt", "tab", "data"]:
+        adata = ad.read_text(filename)
+    elif file_format == "loom":
+        adata = ad.read_loom(filename)
+    elif file_format == "mtx":
+        adata = ad.read_mtx(filename)
+    elif file_format in ["gz", "npz"]:
+        adata = ad.read_umi_tools(filename)
+    elif file_format == "zarr":
+        adata = ad.read_zarr(filename)
+    else:
+        _lh.error(
+            "Error: Unsupported file format '%s'. Should be in one of '%s'",
+            file_format,
+            " ".join(SUPPORTING_EXTENSIONS),
+        )
+        sys.exit(1)
+    return adata
 
 
 def create_dataframe_from_anndata(adata: ad.AnnData, column_name: str) -> pd.DataFrame:
@@ -102,5 +148,5 @@ def main(args: List[str]) -> None:
     elif argv.out.endswith(".tsv"):
         df.to_csv(argv.out, sep="\t", index=False)
     else:
-        _lh.error("Unknown scRNA-Seq format.")
-        exit(1)
+        _lh.error("Unknown output scRNA-Seq format.")
+        sys.exit(1)

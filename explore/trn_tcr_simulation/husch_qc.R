@@ -2,18 +2,15 @@ library("Seurat")
 library("tidyverse")
 library("UpSetR")
 
-hgnc_genes <- (readr::read_tsv("ref/hgnc_complete_set_2024-03-01.tsv", show_col_types = FALSE) %>%
-                   dplyr::filter(locus_group == "protein-coding gene") %>%
-                   dplyr::filter(!is.na(mane_select)) %>%
-                   dplyr::select(symbol))$symbol
+hgnc_genes <- unique((readr::read_tsv("ref/ens.trans_gene_map.tsv", col_names = c("TRANSCRIPT_ID", "GENE_ID")))$GENE_ID)
 sos <- list()
 
 sample_names <- c(
-    "HU_0043_Blood_10x", 
-    "HU_0196_Kidney_GSE109564", 
-    "HU_0148_Decidua_EBI",
-    "HU_0223_Muscle_GSE134355",
-    "HU_0125_Cerebrospinal-Fluid_GSE134577"
+    "HU_0043_Blood_10x"
+    # "HU_0196_Kidney_GSE109564",
+    # "HU_0148_Decidua_EBI",
+    # "HU_0223_Muscle_GSE134355",
+    # "HU_0125_Cerebrospinal-Fluid_GSE134577"
 )
 # Synthesize shared gene set
 orig_genes_table <- data.frame(

@@ -35,7 +35,7 @@ def create_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--transcript_gene_mapping",
-        help="A two-column TSV whose first column are transcript IDs and second column are gene IDs.",
+        help="A headless two-column TSV whose first column are transcript IDs and second column are gene IDs.",
         required=True,
     )
     parser.add_argument(

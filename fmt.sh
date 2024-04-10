@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
 git ls-files |
+    while read -r line; do
+        if [ -e "${line}" ]; then
+            {
+                echo DOS2UNIX "${line}"
+                dos2unix "${line}"
+            } &
+        fi
+    done
+wait
+
+git ls-files |
     grep -v 'deps' |
     grep -v '.idea/' |
     grep '\.sh$' |
@@ -12,6 +23,7 @@ git ls-files |
             } &
         fi
     done
+wait
 
 git ls-files |
     grep -v 'deps' |
@@ -25,6 +37,7 @@ git ls-files |
             } &
         fi
     done
+
 wait
 
 #FormatR has bugs.

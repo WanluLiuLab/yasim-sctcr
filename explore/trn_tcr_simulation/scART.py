@@ -12,9 +12,9 @@ from labw_utils.commonutils.stdlib_helper.shutil_helper import rm_rf
 ART_PATH = "/slurm/home/yrd/liulab/yuzhejian/art"
 SALMON_PATH = "/slurm/home/yrd/liulab/yuzhejian/conda/envs/yasim-salmon/bin/salmon"
 ART_PROFILE_PATH = "/slurm/home/yrd/liulab/yuzhejian/Illumina_profiles"
-MANE_FA_PATH = "ref/MANE.GRCh38.v1.3.ensembl_rna.fna"
-MANE_SALMON_IDX_PATH = "ref/MANE.GRCh38.v1.3.refseq_rna.salmon_idx"
-MANE_MAPPING_PATH = "ref/hgnc_salmon_genemap.tsv"
+MANE_FA_PATH = "ref/ens.sel_genes.cdna.fa"
+MANE_SALMON_IDX_PATH = MANE_FA_PATH + ".salmon_idx.d"
+MANE_MAPPING_PATH = "ref/ens.trans_gene_map.tsv"
 NJOBS = 10
 
 
@@ -22,7 +22,6 @@ def art_salmon(colname: str, sample_name: str) -> None:
     depth_path = os.path.join(f"{sample_name}.sim.d", "depth.d", f"{colname}.tsv")
     out_prefix = os.path.join(f"{sample_name}.sim.d", "gex.d", f"{colname}")
     art_out_prefix = out_prefix + "_art"
-    salmon_out_dir = out_prefix + "_salmon.d"
     art_out_dir = art_out_prefix + ".d"
     print(f"ART {colname}")
     easyexec(
@@ -30,8 +29,6 @@ def art_salmon(colname: str, sample_name: str) -> None:
             ART_PATH,
             "--qual_file_1",
             os.path.join(ART_PROFILE_PATH, "HiSeq2500L125R1.txt"),
-            "--qual_file_2",
-            os.path.join(ART_PROFILE_PATH, "HiSeq2500L125R2.txt"),
             "--seq_file",
             MANE_FA_PATH,
             "--out_file_prefix",
@@ -40,24 +37,20 @@ def art_salmon(colname: str, sample_name: str) -> None:
             "125",
             "--fcov",
             depth_path,
-            "--is_pe",
+            "--is_amplicon",
             "--parallel",
             "-1",
-            "--pe_frag_dist_std_dev",
-            "50",
-            "--pe_frag_dist_mean",
-            "500",
             "--no_sam",
         ],
     )
-    fq1_path = f"{art_out_prefix}_1.fq"
-    fq2_path = f"{art_out_prefix}_2.fq"
-    with open(fq1_path, "w") as faw1, open(fq2_path, "w") as faw2:
+    fq1_path = f"{art_out_prefix}.fq"
+    with open(fq1_path, "w") as faw1:
         for fn in glob.glob(f"{art_out_dir}/*_1.fq"):
             shutil.copyfileobj(open(fn), faw1)
-        for fn in glob.glob(f"{art_out_dir}/*_2.fq"):
-            shutil.copyfileobj(open(fn), faw2)
+
     shutil.rmtree(art_out_dir)
+
+    salmon_out_dir = out_prefix + "_salmon.d"
     print(f"SALMON {colname}")
     easyexec(
         [
@@ -67,11 +60,9 @@ def art_salmon(colname: str, sample_name: str) -> None:
             "-i",
             MANE_SALMON_IDX_PATH,
             "-l",
-            "IU",
-            "-1",
+            "U",
+            "-r",
             fq1_path,
-            "-2",
-            fq2_path,
             "-o",
             salmon_out_dir,
             "-p",
@@ -116,11 +107,10 @@ if __name__ == "__main__":
     if os.path.exists(MANE_SALMON_IDX_PATH):
         easyexec([SALMON_PATH, "index", "-t", MANE_FA_PATH, "-i", MANE_SALMON_IDX_PATH, "-p", str(NJOBS)])
     for _sample_name in [
+        "HU_0043_Blood_10x",
         # "HU_0196_Kidney_GSE109564",
-        # "HU_0043_Blood_10x",
         # "HU_0148_Decidua_EBI",
         # "HU_0223_Muscle_GSE134355",
         # "HU_0125_Cerebrospinal-Fluid_GSE134577",
     ]:
-        rm_rf(os.path.join(f"{_sample_name}.sim.d", "gex.d"))
         run_sample(_sample_name)

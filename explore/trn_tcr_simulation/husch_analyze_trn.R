@@ -10,11 +10,11 @@ mut_table <- function(x) {
 
 sos <- list()
 sample_names <- c(
-    "HU_0043_Blood_10x",
-    "HU_0196_Kidney_GSE109564",
-    "HU_0148_Decidua_EBI",
-    "HU_0223_Muscle_GSE134355",
-    "HU_0125_Cerebrospinal-Fluid_GSE134577"
+    "HU_0043_Blood_10x"
+    # "HU_0196_Kidney_GSE109564",
+    # "HU_0148_Decidua_EBI",
+    # "HU_0223_Muscle_GSE134355",
+    # "HU_0125_Cerebrospinal-Fluid_GSE134577"
 )
 for (sample_name in sample_names) {
     sos[[sample_name]] <- list(

@@ -92,12 +92,14 @@ def main(args: List[str]):
     barcodes = list(get_tqdm_line_reader(argv.barcodes))
     n_t_cell = len(barcodes)
     _lh.info("Generating %d T-Cells from %s TCRs.", n_t_cell, n_tcr)
-
-    clon_size = np.sort(zipf_yuzj_y4p(n_tcr, n_t_cell, alpha))[::-1]
-    while clon_size.sum() < n_t_cell:
-        clon_size[0] += 1
-    while clon_size.sum() > n_t_cell:
-        clon_size[0] -= 1
+    if n_tcr == n_t_cell:
+        clon_size = np.ones(n_tcr, dtype=int)
+    else:
+        clon_size = np.sort(zipf_yuzj_y4p(n_tcr, n_t_cell, alpha))[::-1]
+        while clon_size.sum() < n_t_cell:
+            clon_size[0] += 1
+        while clon_size.sum() > n_t_cell:
+            clon_size[0] -= 1
     _lh.info("Generated: " + describe(clon_size))
 
     barcode_uuid_map = []

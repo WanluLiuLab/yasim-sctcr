@@ -1,9 +1,9 @@
 *.json
-trust4*/
-*slrum*
 *.err
 *.out
 times
-/ref
 *.d
-
+*/
+*.rds
+*.fna
+!slurm
