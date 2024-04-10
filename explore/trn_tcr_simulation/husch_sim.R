@@ -24,7 +24,7 @@ for (sample_name in sample_names) {
     so <- sos_post_qc[[sample_name]]
     scm <- as.matrix(so[["RNA"]]$counts)
     colnames(scm) <- so$Celltype
-    w_sample(scm, sample_name, "real")
+    # w_sample(scm, sample_name, "real")
 
     n_cells <- 500
     all_cell_types <- unique(so$Celltype)
@@ -35,24 +35,26 @@ for (sample_name in sample_names) {
 
     message("Learning...")
     copula_result <- fit_model_scDesign2(scm, unique(so$Celltype), marginal = "poisson")
-    message(sprintf("Simulating mixed sample for %d cells...", n_cells))
-    sim_count_copula <- simulate_count_scDesign2(
-        copula_result,
-        n_cells,
-        cell_type_prop = table(so$Celltype) / length(so$Celltype)
-    )
-    row.names(sim_count_copula) <- row.names(scm)
-    w_sample(sim_count_copula, sample_name, "sim")
+    # message(sprintf("Simulating mixed sample for %d cells...", n_cells))
+    # sim_count_copula <- simulate_count_scDesign2(
+    #     copula_result,
+    #     n_cells,
+    #     cell_type_prop = table(so$Celltype) / length(so$Celltype)
+    # )
+    # row.names(sim_count_copula) <- row.names(scm)
+    # w_sample(sim_count_copula, sample_name, "sim")
     for (n_t_cells in c(100, 500, 1000)){
-        message(sprintf("Simulating T-Cell only sample for %d cells...", n_t_cells))
+        for (replicate_num in 1:10){
+            message(sprintf("Simulating T-Cell only sample for %d cells rep %d...", n_t_cells, replicate_num))
 
-        sim_count_copula <- simulate_count_scDesign2(
-            copula_result,
-            n_t_cells,
-            cell_type_prop = cell_type_prop
-        )
-        row.names(sim_count_copula) <- row.names(scm)
-        w_sample(sim_count_copula, sample_name, sprintf("sim_tcell_only_%d", n_t_cells))
+            sim_count_copula <- simulate_count_scDesign2(
+                copula_result,
+                n_t_cells,
+                cell_type_prop = cell_type_prop
+            )
+            row.names(sim_count_copula) <- row.names(scm)
+            w_sample(sim_count_copula, sample_name, sprintf("sim_tcell_only_ncells%d_rep%d", n_t_cells, replicate_num))
+        }
     }
     gc()
 }

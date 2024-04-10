@@ -142,7 +142,7 @@ def main(args: List[str]) -> None:
         for barcode in barcodes[num_t_cells:]:
             w.write(barcode)
             w.write("\n")
-    depth_d = os.path.join(out_dir, "depth.d")
+    depth_d = os.path.join(out_dir, "scGEX.depth.d")
     os.makedirs(depth_d)
     for barcode, col_name in zip(barcodes_t, col_names_t):
         df[[col_name]].rename(columns={col_name: "DEPTH"}).to_csv(
