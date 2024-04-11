@@ -18,7 +18,7 @@ python -m yasim_sctcr generate_tcr_clonal_expansion \
 python -m labw_utils.bioutils split_fasta sim/"${data_name}".sim.d/sim_t_cell.nt.fa
 
 
-for tcr_depth in 2 4 8 10 20 40 60 80 100; do
+for tcr_depth in 2 4 8 10 20 40 60 80 100 400; do
     python -m yasim_sctcr generate_tcr_depth \
         -b sim/"${data_name}".sim.d/t_cell_bc.txt \
         -o sim/"${data_name}".sim.d/scTCR.depth"${tcr_depth}".tsv \

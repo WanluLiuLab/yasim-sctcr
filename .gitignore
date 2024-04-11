@@ -479,4 +479,6 @@ syq_article_simulation2
 *.idx
 *.sif
 *.tbi
+logs/
+*.fna
 
