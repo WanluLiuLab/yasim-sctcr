@@ -2,8 +2,8 @@
 #SBATCH --job-name=run_simulation
 #SBATCH --partition=cpu
 #SBATCH --nodes=1
-#SBATCH --mem=10GB
-#SBATCH --ntasks-per-node=10
+#SBATCH --mem=40GB
+#SBATCH --ntasks-per-node=40
 #SBATCH --output=logs/%j.out
 #SBATCH --error=logs/%j.err
 #SBATCH --time=48:00:00
@@ -14,6 +14,6 @@ set -ue
 cd /slurm/home/yrd/liulab/yuzhejian/yasim-sctcr
 . bashrc
 
-cd /slurm/home/yrd/liulab/yuzhejian/yasim-sctcr/explore/husch_gex
+cd /slurm/home/yrd/liulab/yuzhejian/yasim-sctcr/explore/trn_tcr_simulation
 
 python scART.py
