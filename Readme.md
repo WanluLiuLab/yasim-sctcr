@@ -6,7 +6,7 @@
 
 ## Introduction
 
-Single-Cel T-Cell Receptor (TCR) Sequencing (scTCR-Seq) is an important method in studying the diversity and dynamics of T-cell populations in organisms. However, since the number of publically available scTCR-Seq datasets are limited, researchers often needs to reconstruct TCR contigs from scRNA-Seq data, and a benchmark of such tools is required.
+Single-Cel T-Cell Receptor (TCR) Sequencing (scTCR-Seq) is an important method in studying the diversity and dynamics of T-cell populations in organisms. However, since the number of publicly available scTCR-Seq datasets is limited, researchers often need to reconstruct TCR contigs from scRNA-Seq data, and a benchmark of such tools is required.
 
 This software provides an easy way to simulate Next-Generation Sequencing (NGS)-based scTCR-Seq using Illumina sequencer simulator. With realistic TCR contig constructed from statistics of **1.08 million** human TCR V/J CDR3 sequences from [hUARdb](https://huarc.net), it supports simulation of TCR contigs from arbitrary cell number, sequencing depth, read length with Paired/Single End support. It also supports mixing scTCR-Seq data with simulated scRNA-Seq data, which allows calculation of both precision and sensitivity.
 
@@ -16,10 +16,10 @@ This software provides an easy way to simulate Next-Generation Sequencing (NGS)-
 
 ### Using the Pre-Built Version from PYPI
 
-You need a working [Python](https://www.python.org) interpreter (CPython implementation) >= 3.7 (**recommended 3.8**) and the latest [`pip`](https://pip.pypa.io/) to install this software from [PYPI](https://pypi.org). Command:
+You need a working [Python](https://www.python.org) interpreter (CPython implementation) >= 3.8 (**recommended 3.9**) and the latest [`pip`](https://pip.pypa.io/) to install this software from [PYPI](https://pypi.org). Command:
 
 ```shell
-pip install yasim-sctcr==0.1.0
+pip install yasim-sctcr==0.1.1
 ```
 
 You are recommended to use this application inside a virtual environment like [`venv`](https://docs.python.org/3/library/venv.html), [`virtualenv`](https://virtualenv.pypa.io), [`pipenv`](https://pipenv.pypa.io), [`conda`](https://conda.io), or [`poetry`](https://python-poetry.org).
@@ -56,9 +56,9 @@ Apart from the above instructions, you should also install [ART](https://www.nie
 The initial release version is [0.1.0](https://pypi.org/project/yasim-sctcr/0.1.0/) at 2023/08/06.
 
 - 0.1.1: Addressed several problems proposed by the reviewers:
-  - [X] Simulation for TRC gene added to `generate_tcr_cache` and `rearrange_tcr`.
-  - [ ] Support the simulation of non-productive TCRs on a fixed ratio.
-  - [X] The scRNA-Seq simulator accepts outputs from other scNRA-Seq simulator.
-  - [X] Supported the distribution of TCR repertoire created by clonal expansion.
-  - [?] scTCR-Seq-specific fragment length and bias.
-  - [X] Supported V/J usage bias.
+  - Simulation for TRC gene added to `generate_tcr_cache` and `rearrange_tcr`.
+  - Support the simulation of non-productive TCRs on a fixed ratio.
+  - The scRNA-Seq simulator accepts outputs from other scNRA-Seq simulators.
+  - Supported the distribution of TCR repertoire created by clonal expansion.
+  - scTCR-Seq-specific fragment length and bias.
+  - Supported V/J usage bias.
