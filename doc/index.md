@@ -10,6 +10,7 @@ This contains documentation for YASIM Users.
 _root/Readme
 _cli_docs/index
 src/tutorial/index
+src/faq
 _root/Copying
 src/license/index
 ```

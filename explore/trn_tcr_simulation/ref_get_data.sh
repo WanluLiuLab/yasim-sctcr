@@ -24,7 +24,7 @@ for name in cdna pep; do
         >ens."${name}".fa
     samtools faidx ens."${name}".fa
 done
-seqtk subseq Homo_sapiens.GRCh38.cdna.all.fa <(cut -f 1 ens.trans_gene_map.tsv) > ens.sel_genes.cdna.fa
+seqtk subseq Homo_sapiens.GRCh38.cdna.all.fa <(cut -f 1 ens.trans_gene_map.tsv) >ens.sel_genes.cdna.fa
 
 cd ..
 Rscript ref_get_pcg_from_biomart.R

@@ -24,13 +24,14 @@ RLEN_ERRORPROFILE_STRATEGY1 = [
     (250, "MiSeqv3L250R1.txt"),
 ]
 
+
 def art_salmon(
-        colname: str, 
-        depth_path: str,
-        read_len: int,
-        err_profile: str,
-        output_dir_name: str,
-    ) -> None:
+    colname: str,
+    depth_path: str,
+    read_len: int,
+    err_profile: str,
+    output_dir_name: str,
+) -> None:
     art_out_prefix = output_dir_name + "_art"
     art_out_dir = art_out_prefix + ".d"
     print(f"ART {colname}", file=sys.stderr)
@@ -52,7 +53,7 @@ def art_salmon(
             "-1",
             "--no_sam",
         ],
-        log_path=art_out_prefix+".log"
+        log_path=art_out_prefix + ".log",
     )
     fq1_path = f"{art_out_prefix}.fq"
     with open(fq1_path, "w") as faw1:
@@ -66,12 +67,14 @@ def run_strategy_1():
     _sample_name = "HU_0043_Blood_10x"
     barcodes = [
         *get_tqdm_line_reader(os.path.join("sim", f"{_sample_name}.sim.d", "n_cell_bc.txt")),
-        *get_tqdm_line_reader(os.path.join("sim",f"{_sample_name}.sim.d", "t_cell_bc.txt")),
+        *get_tqdm_line_reader(os.path.join("sim", f"{_sample_name}.sim.d", "t_cell_bc.txt")),
     ]
     os.makedirs(os.path.join("sim", f"{_sample_name}.sim.d", "art_gex_diff_rlen"), exist_ok=True)
     with concurrent.futures.ThreadPoolExecutor(max_workers=NJOBS) as pool:
         for read_len, error_profile in RLEN_ERRORPROFILE_STRATEGY1:
-            output_dir_name = os.path.join("sim", f"{_sample_name}.sim.d", "art_gex_diff_rlen", f"sim_gex_rlen{read_len}")
+            output_dir_name = os.path.join(
+                "sim", f"{_sample_name}.sim.d", "art_gex_diff_rlen", f"sim_gex_rlen{read_len}"
+            )
             for barcode in barcodes:
                 pool.submit(
                     art_salmon,
@@ -81,6 +84,7 @@ def run_strategy_1():
                     error_profile,
                     os.path.join(output_dir_name, f"{barcode}.d"),
                 )
+
 
 def run_strategy_2():
     for t_cell_num in (100, 500, 1000):
@@ -106,4 +110,3 @@ def run_strategy_2():
 if __name__ == "__main__":
     # run_strategy_1()
     run_strategy_2()
-

@@ -2,6 +2,8 @@
 generate_tcr_cache.py -- Generation of TCR Cache.
 
 .. versionadded:: 0.1.0
+.. versionchanged:: 0.1.1
+    Generation of FASTA files removed.
 """
 
 __all__ = ("main", "create_parser")
@@ -99,13 +101,13 @@ def create_tcr_cache(
     with get_writer(tcr_cache_path) as writer:
         json.dump(tcrs, writer)
 
-    with get_writer(tcr_cache_path + ".nt.fa") as writer:
-        for tcr_name, tcr_tt in tcrs.items():
-            writer.write(f">{tcr_name}\n{''.join(list(zip(*tcr_tt))[0])}\n")
-
-    with get_writer(tcr_cache_path + ".aa.fa") as writer:
-        for tcr_name, tcr_tt in tcrs.items():
-            writer.write(f">{tcr_name}\n{''.join(list(zip(*tcr_tt))[1])}\n")
+    # with get_writer(tcr_cache_path + ".nt.fa") as writer:
+    #     for tcr_name, tcr_tt in tcrs.items():
+    #         writer.write(f">{tcr_name}\n{''.join(list(zip(*tcr_tt))[0])}\n")
+    #
+    # with get_writer(tcr_cache_path + ".aa.fa") as writer:
+    #     for tcr_name, tcr_tt in tcrs.items():
+    #         writer.write(f">{tcr_name}\n{''.join(list(zip(*tcr_tt))[1])}\n")
 
 
 def main(args: List[str]) -> int:

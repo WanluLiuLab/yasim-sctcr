@@ -5,6 +5,5 @@
 :glob:
 :maxdepth: 2
 
-sctcr
-sc
+seurat_scdesign2
 ```

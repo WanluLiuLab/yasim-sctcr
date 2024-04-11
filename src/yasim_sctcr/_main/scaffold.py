@@ -109,7 +109,11 @@ def main(args: List[str]) -> None:
     _lh.info("Sampled to 500 genes. Current data distribution: %s", describe(df.to_numpy()))
     df /= df.to_numpy().mean() * argv.mean_depth
     _lh.info("Re-scale to %.2f. Current data distribution: %s", argv.mean_depth, describe(df.to_numpy()))
-    df.reset_index().to_parquet(os.path.join(out_dir, "sim_dw_sampled.parquet"))
+    odf = df.reset_index()
+    try:
+        odf.to_parquet(os.path.join(out_dir, "sim_dw_sampled.parquet"), index=False)
+    except (ImportError, AttributeError):
+        odf.to_csv(os.path.join(out_dir, "sim_dw_sampled.parquet"), index=False, sep="\t")
     gene_ids_selected = df.index
     # In this step, we will select 1 isoform per gene.
     rng = random.SystemRandom()
