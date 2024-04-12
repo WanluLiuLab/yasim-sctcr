@@ -5,6 +5,8 @@ convert_anndata -- Convert Scanpy AnnData object to TSV/Apache Parquet for ``sca
 
 """
 
+__all__ = ("main", "create_parser")
+
 import argparse
 import os
 import sys
@@ -137,7 +139,7 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(args: List[str]) -> None:
+def main(args: List[str]) -> int:
     argv = create_parser().parse_args(args)
     _lh.info("Reading anndata...")
     adata = ad.read(argv.adata)
@@ -149,4 +151,5 @@ def main(args: List[str]) -> None:
         df.to_csv(argv.out, sep="\t", index=False)
     else:
         _lh.error("Unknown output scRNA-Seq format.")
-        sys.exit(1)
+        return 1
+    return 0

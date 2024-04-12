@@ -10,8 +10,6 @@ Single-Cel T-Cell Receptor (TCR) Sequencing (scTCR-Seq) is an important method i
 
 This software provides an easy way to simulate Next-Generation Sequencing (NGS)-based scTCR-Seq using Illumina sequencer simulator. With realistic TCR contig constructed from statistics of **1.08 million** human TCR V/J CDR3 sequences from [hUARdb](https://huarc.net), it supports simulation of TCR contigs from arbitrary cell number, sequencing depth, read length with Paired/Single End support. It also supports mixing scTCR-Seq data with simulated scRNA-Seq data, which allows calculation of both precision and sensitivity.
 
-![Workflow](./workflow.svg)
-
 ## Installation
 
 ### Using the Pre-Built Version from PYPI

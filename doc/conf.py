@@ -6,7 +6,7 @@ Configuration file for the Sphinx documentation builder.
 
 import os
 
-import tomli
+from labw_utils.stdlib.cpy311 import tomllib
 from docutils.parsers.null import Parser as NullParser
 from sphinx.application import Sphinx
 
@@ -24,7 +24,7 @@ ROOT_DIR = os.path.dirname(THIS_DIR)
 # -- Project information -----------------------------------------------------
 
 with open(os.path.join(ROOT_DIR, "pyproject.toml"), "rb") as reader:
-    parsed_pyproject = tomli.load(reader)
+    parsed_pyproject = tomllib.load(reader)
 
 project = parsed_pyproject["project"]["name"]
 author = "&".join([author["name"] for author in parsed_pyproject["project"]["authors"]])
@@ -66,3 +66,8 @@ nb_execution_timeout = 1200
 nb_execution_mode = "cache"
 nb_merge_streams = True
 nb_execution_allow_errors = True
+
+latex_engine = "xelatex"
+latex_elements = {
+    "papersize": "a3paper",
+}

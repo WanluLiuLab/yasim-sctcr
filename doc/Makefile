@@ -3,7 +3,7 @@ SPHINX_OPTS := -j auto
 BUILD_DIR := $(CURDIR)/_build
 
 .PHONY: all
-all: html
+all: html pdf
 
 .PHONY: preconfigure
 preconfigure: src
@@ -16,6 +16,10 @@ src:
 .PHONY: html
 html: src preconfigure
 	sphinx-build -M html $(CURDIR) $(BUILD_DIR) $(SPHINX_OPTS)
+
+.PHONY: pdf
+pdf: src preconfigure
+	sphinx-build -M latexpdf $(CURDIR) $(BUILD_DIR) $(SPHINX_OPTS)
 
 .PHONY: clean
 clean:

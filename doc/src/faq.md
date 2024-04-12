@@ -2,48 +2,39 @@
 
 ## Experimental Design
 
-- **Q: I got scRNA-Seq data in loom/h5ad/Seurat RData/other formats. How can I convert it to a format YASIM-scTCR supports?**
+- **Q: I got scRNA-Seq data in loom/h5ad/others. How can I convert it to a format YASIM-scTCR supports?**
 
-  A: If your format is supported by AnnData, you may convert it using TODO.
-
-## Low-Level Read Generators
+  A: If your format is supported by AnnData, you may convert it using `convert_anndata` command.
 
 - **Q: Do YASIM-scTCR support raw FASTQ reads from manufacturers like 10xGenomics, etc?**
 
   A: No. The generated FASTQ files should be analyzed using standard pipelines on a cell-to-cell basis.
 
-## Reference TCR Sequences
-
-- **Q: We observed that IMGT GENEDB/UniProtKb-SWISSPROT/IgBLAST are also providing nucleotide and/or amino-acid sequences for TCR gene segments.**
-
-  A: You are free to use those TCR gene segments. You may download those sequences from:
-
-    - [IMGT GENEDB](https://www.imgt.org/download/GENE-DB/).
-    - [UniProtKb-SWISSPROT](https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz).
-    - [IgBLAST Reference TCR](https://ftp.ncbi.nih.gov/blast/executables/igblast/release/).
-
-    However, since our data is primarily based on CellRanger statistics, we still recommend you to use the same version of TCR segments used by us (i.e., Ensembl release 97). Using a different version of TCR segments will lead to the risk of:
-
-    - Different nomenclatures. The IMGT reference may include `/` in their gene names, which must be removed before further processing.
-    - Divergent sequences. The IMGT, SwissProt and Ensembl release 97 have different nucleotide and amino-acid sequences for the same TCR gene segment. IMGT VQUEST may include multiple sequences from different databases for the same gene.
-
 ## Reproducibility
+
+- **Q: We observed that other databases are also providing nucleotide and/or amino-acid sequences for TCR gene segments.**
+
+  A: You are free to use TCR gene segments from [IMGT GENEDB](https://www.imgt.org/download/GENE-DB/), [UniProtKb-SWISSPROT](https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz), [IgBLAST Reference TCR](https://ftp.ncbi.nih.gov/blast/executables/igblast/release/). However, since our data is primarily based on CellRanger statistics, we still recommend you to use the same version of TCR segments used by us (i.e., Ensembl release 97). Using a different version of TCR segments will lead to the risk of:
+
+  - Different nomenclatures. The IMGT reference may include `/` in their gene names, which must be removed before further processing.
+  - Divergent sequences. The IMGT, SwissProt and Ensembl release 97 have different nucleotide and amino-acid sequences for the same TCR gene segment. IMGT VQUEST may include multiple sequences from different databases for the same gene.
 
 - **Q: What's the version of software used in your studies?**
   
   A: See the following table:
 
-  | Software                                              | Version   |
-  |-------------------------------------------------------|-----------|
-  | [GNU Bash](https://www.gnu.org/software/bash)         | 5.2.21(1) |
-  | [GNU Grep](https://www.gnu.org/software/grep)         | 3.11      |
-  | [GNU Wget](https://www.gnu.org/software/wget)         | 1.21.4    |
-  | [GNU Sed](https://www.gnu.org/software/sed)           | 4.9       |
-  | [yasim](https://pypi.org/project/yasim/)              | 3.2.1     |
-  | [yasim\_sctcr](https://pypi.org/project/yasim-sctcr/) | 0.1.1     |
-  | [samtools](https://www.htslib.org)                    | 1.13      |
-  | [seqkit](https://bioinf.shenwei.me/seqkit)            | 2.3.0     |
-  | [seqtk](https://github.com/lh3/seqtk)                 | 1.4-r122  |
+  | Software                                                                                           | Version   |
+  |----------------------------------------------------------------------------------------------------|-----------|
+  | [GNU Bash](https://www.gnu.org/software/bash)                                                      | 5.2.21(1) |
+  | [GNU Grep](https://www.gnu.org/software/grep)                                                      | 3.11      |
+  | [GNU Wget](https://www.gnu.org/software/wget)                                                      | 1.21.4    |
+  | [GNU Sed](https://www.gnu.org/software/sed)                                                        | 4.9       |
+  | [yasim](https://pypi.org/project/yasim/)                                                           | 3.2.1     |
+  | [yasim\_sctcr](https://pypi.org/project/yasim-sctcr/)                                              | 0.1.1     |
+  | [art\_illumina](https://www.niehs.nih.gov/research/resources/software/biostatistics/art/index.cfm) | 2.5.8     |
+  | [samtools](https://www.htslib.org)                                                                 | 1.13      |
+  | [seqkit](https://bioinf.shenwei.me/seqkit)                                                         | 2.3.0     |
+  | [seqtk](https://github.com/lh3/seqtk)                                                              | 1.4-r122  |
 
 - **Q: What's the version of R packages used in your studies?**
 
