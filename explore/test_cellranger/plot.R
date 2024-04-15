@@ -1,7 +1,7 @@
 library(tidyverse)
 
 df <- readr::read_tsv(
-    "SC5pv2_GEX_Human_Lung_Carcinoma_DTC_possorted_genome_bam.salmon.sorted.depth.tsv.xz",
+    "pbmc_1k_v3_possorted_genome_bam.salmon.sorted.depth.tsv.xz",
     col_names = c("CHROM", "POS", "DEPTH"),
     skip=1
 )
@@ -13,19 +13,21 @@ df_mean_ex <- df %>%
         len=max(POS)
     ) %>%
     dplyr::filter(
-        mean_depth>100,
+        mean_depth>200,
         len>3000
-    )
+    ) %>%
+    dplyr::sample_n(20)
 
 df_sel <- df %>%
     dplyr::filter(CHROM%in%df_mean_ex$CHROM) %>%
-    dplyr::group_by(CHROM) %>%
-    dplyr::mutate(POS=POS/max(POS), MAXDEPTH=max(DEPTH)) %>%
-    dplyr::filter(DEPTH==MAXDEPTH)
+    dplyr::group_by(CHROM)
+
 
 ggplot(df_sel) +
-    geom_histogram(aes(
-        x=POS
+    geom_line(aes(
+        x=POS,
+        y=DEPTH
     )) +
+    facet_wrap(.~CHROM, scales = "free") +
     theme_bw()
 

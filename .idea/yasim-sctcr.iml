@@ -81,6 +81,16 @@
       <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/raw_data" />
       <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/sim" />
       <excludeFolder url="file://$MODULE_DIR$/explore/trn_tcr_simulation/to_jiashan" />
+      <excludeFolder url="file://$MODULE_DIR$/explore/test_cellranger/SC5pv2_GEX_Human_Lung_Carcinoma_DTC_possorted_genome_bam.salmon.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_t_cell.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_t_cell.rc.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_t_cell.rev.nt.fa.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr_ampli.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr_ampli_rc.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr_ampli_rev.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/sim_tcr_batch.d" />
+      <excludeFolder url="file://$MODULE_DIR$/test/trust4_index" />
+      <excludeFolder url="file://$MODULE_DIR$/test/trust4_result" />
     </content>
     <orderEntry type="jdk" jdkName="yasim_dev" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

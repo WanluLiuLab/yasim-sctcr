@@ -15,9 +15,16 @@ python -m yasim_sctcr generate_tcr_clonal_expansion \
     --src_tcr_stats_tsv sim/"${data_name}".sim.d/sim_tcr.stats.tsv \
     --dst_nt_fasta sim/"${data_name}".sim.d/sim_t_cell.nt.fa \
     --alpha 1
-python -m labw_utils.bioutils split_fasta sim/"${data_name}".sim.d/sim_t_cell.nt.fa
+seqkit seq \
+    --seq-type DNA \
+    --validate-seq \
+    --reverse \
+    --complement \
+    <sim/"${data_name}".sim.d/sim_t_cell.nt.fa \
+    >sim/"${data_name}".sim.d/sim_t_cell.rc.nt.fa
+python -m labw_utils.bioutils split_fasta sim/"${data_name}".sim.d/sim_t_cell.rc.nt.fa
 
-for tcr_depth in 2 4 8 10 20 40 60 80 100 400; do
+for tcr_depth in 2 4 6 8 10 20 40 60 80 100 400; do
     python -m yasim_sctcr generate_tcr_depth \
         -b sim/"${data_name}".sim.d/t_cell_bc.txt \
         -o sim/"${data_name}".sim.d/scTCR.depth"${tcr_depth}".tsv \
@@ -43,7 +50,15 @@ for i in {0..2}; do
             --src_tcr_stats_tsv sim/"${prefix}".d/sim_tcr.stats.tsv \
             --dst_nt_fasta sim/"${prefix}".d/sim_t_cell.nt.fa \
             --alpha 1
-        python -m labw_utils.bioutils split_fasta sim/"${prefix}".d/sim_t_cell.nt.fa
+        seqkit seq \
+            --seq-type DNA \
+            --validate-seq \
+            --reverse \
+            --complement \
+            <sim/"${prefix}".d/sim_t_cell.nt.fa \
+            >sim/"${prefix}".d/sim_t_cell.rc.nt.fa
+
+        python -m labw_utils.bioutils split_fasta sim/"${prefix}".d/sim_t_cell.rc.nt.fa
         python -m yasim_sctcr generate_tcr_depth \
             -b sim/"${prefix}".d/t_cell_bc.txt \
             -o sim/"${prefix}".d/scTCR.depth10.tsv \
