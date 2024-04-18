@@ -95,14 +95,14 @@ def run_strategy_2():
                     *get_tqdm_line_reader(os.path.join("sim", _sample_name, "n_cell_bc.txt")),
                     *get_tqdm_line_reader(os.path.join("sim", _sample_name, "t_cell_bc.txt")),
                 ]
-                output_dir_name = os.path.join("sim", _sample_name, "art_sim_gex_rlen150.d")
+                output_dir_name = os.path.join("sim", _sample_name, "art_sim_gex_rlen250.d")
                 for barcode in barcodes:
                     pool.submit(
                         art_salmon,
                         barcode,
                         os.path.join("sim", _sample_name, "scGEX.depth.d", f"{barcode}.tsv"),
-                        150,
-                        "HiSeq2500L150R1.txt",
+                        250,
+                        "MiSeqv3L250R1.txt",
                         os.path.join(output_dir_name, f"{barcode}.d"),
                     )
 
