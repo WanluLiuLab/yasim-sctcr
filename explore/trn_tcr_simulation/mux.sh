@@ -38,16 +38,15 @@ for depth in 2 4 6 8 10 20 40 60 80 100; do
 done
 
 cd ..
+mkdir -p HU_0043_Blood_10x_sim_tcell_only_mux
 for dir in HU_0043_Blood_10x_sim_tcell_only_*.d; do
-    cd "${dir}"
-    mkdir -p mux
-    echo "${PWD}/mux"
-    while read -r line; do
-        cat \
-            art_sim_gex_rlen150.d/"${line}".d_art.fq \
-            art_sim_t_cell_rlen150.d/"${line}"_A.fq \
-            art_sim_t_cell_rlen150.d/"${line}"_B.fq \
-            >mux/"${line}".fq
-    done <t_cell_bc.txt
-    cd ..
+    echo "${dir}"
+    printf '' > HU_0043_Blood_10x_sim_tcell_only_mux/"${dir}".fq
+    for fn in \
+        "${dir}"/art_sim_gex_rlen250.d/*.d_art.fq \
+        "${dir}"/art_sim_t_cell_rlen250.d/*_A.fq \
+        "${dir}"/art_sim_t_cell_rlen250.d/*_B.fq
+        do 
+            cat "${fn}" >>HU_0043_Blood_10x_sim_tcell_only_mux/"${dir}".fq
+    done
 done
