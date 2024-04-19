@@ -53,13 +53,13 @@ for t_cell_num in 100 500 1000; do
         prefix="${data_name}"_sim_tcell_only_ncells"${t_cell_num}"_rep"${replicate_num}"
         python -m yasim art \
             -F sim/"${prefix}".d/sim_t_cell.rc.nt.fa.d \
-            -o sim/"${prefix}".d/art_sim_t_cell_rlen150 \
-            --sequencer_name HS25 \
-            --read_length 150 \
+            -o sim/"${prefix}".d/art_sim_t_cell_rlen250 \
+            --sequencer_name MSv3 \
+            --read_length 250 \
             -d sim/"${prefix}".d/scTCR.depth10.tsv \
             -e art_illumina \
             -j 40 \
             --amplicon
-        rm -f sim/"${prefix}".d/art_sim_t_cell_rlen150.fq
+        rm -f sim/"${prefix}".d/art_sim_t_cell_rlen250.fq
     done
 done
