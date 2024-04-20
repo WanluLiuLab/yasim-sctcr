@@ -1,6 +1,6 @@
 # Quickstart
 
-**Simulate Paired 5' scRNA-Seq and scTCR-Seq data using YASIM-scTCR**
+**Simulate scRNA-Seq and scTCR-Seq data using YASIM-scTCR**
 
 [Single Cell Immune Profiling](https://www.10xgenomics.com/support/single-cell-immune-profiling) by [10X Genomics](https://www.10xgenomics.com/) allows sense of both TCR/BCR sequence and gene expression data using 5' sequencing on a single-cell basis. This tutorial tells you how to simulate such data using YASIM-scTCR.
 
@@ -124,10 +124,25 @@ python -m yasim_sctcr generate_tcr_depth \
 
 ### Invocation of LLRGs
 
-The following example would perform single-end scTCR-Seq using ART.
+The following example would perform single-end scTCR-Seq using ART. To simulate full-length scRNA-Seq (i.e., SMART-Seq, SMART-Seq2, etc.), do the fiollowing:
 
 ```shell
 # Split the FASTA before performing calling YASIM RNA-Seq interface
+python -m labw_utils.bioutils split_fasta HU_0043_Blood_10x.sim.d/sim_t_cell.nt.fa
+python -m yasim art \
+    -F HU_0043_Blood_10x.sim.d/sim_t_cell.nt.fa.d \
+    -o HU_0043_Blood_10x/sim_tcr_50 \
+    --sequencer_name GA2 \
+    --read_length 50 \
+    -d HU_0043_Blood_10x.sim.d/scTCR.depth.tsv \
+    -e art_illumina \
+    --preserve_intermediate_files \
+    -j 20
+```
+
+You may simulate 3' amplified scTCR-Seq with following step:
+
+```shell
 python -m labw_utils.bioutils split_fasta HU_0043_Blood_10x.sim.d/sim_t_cell.nt.fa
 python -m yasim art \
     -F HU_0043_Blood_10x.sim.d/sim_t_cell.nt.fa.d \
@@ -141,7 +156,24 @@ python -m yasim art \
     --amplicon
 ```
 
-Please note that the `--amplicon` parameter (which is directly passed to ART) is crucial; without which the generated data will not be 5' amplified.
+You may simulate 5' amplified scTCR-Seq with following step:
+
+```shell
+seqkit seq --reverse --complement \
+    <HU_0043_Blood_10x.sim.d/sim_t_cell.nt.fa \
+    >HU_0043_Blood_10x.sim.d/sim_t_cell.rc.nt.fa
+python -m labw_utils.bioutils split_fasta HU_0043_Blood_10x.sim.d/sim_t_cell.rc.nt.fa
+python -m yasim art \
+    -F HU_0043_Blood_10x.sim.d/sim_t_cell.rc.nt.fa.d \
+    -o HU_0043_Blood_10x/sim_tcr_50 \
+    --sequencer_name GA2 \
+    --read_length 50 \
+    -d HU_0043_Blood_10x.sim.d/scTCR.depth.tsv \
+    -e art_illumina \
+    --preserve_intermediate_files \
+    -j 20 \
+    --amplicon
+```
 
 **Generates:**
 
@@ -151,7 +183,7 @@ Please note that the `--amplicon` parameter (which is directly passed to ART) is
 
 ## Step 3. Simulate scRNA-Seq Data
 
-Since scRNA-Seq depth information had already been contained in the scaffold, we only need to invoke LLRG. The following example would perform scRNA-Seq using ART.
+Since scRNA-Seq depth information had already been contained in the scaffold, we only need to invoke LLRG. The following example would perform scRNA-Seq using ART. The following example simulated full-length scRNA-Seq, with 5' or 3' amplified scRNA-Seq available using the method described above.
 
 ```shell
 python -m labw_utils.bioutils split_fasta ens.sel_genes.cdna.fa
@@ -160,8 +192,7 @@ python -m yasim_sc art \
     -o HU_0043_Blood_10x/sim_notcr_50.d \
     -d HU_0043_Blood_10x/scGEX.depth.d \
     -e art_illumina \
-    -j 20 \
-    --amplicon
+    -j 20
 ```
 
 Generates:
