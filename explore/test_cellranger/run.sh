@@ -7,6 +7,7 @@ salmon index -t MANE.GRCh38.v1.3.refseq_rna.fna -i MANE.GRCh38.v1.3.refseq_rna.s
 # https://www.10xgenomics.com/datasets/1-k-pbm-cs-from-a-healthy-donor-v-3-chemistry-3-standard-3-0-0
 axel https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_possorted_genome_bam.bam
 axel https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_possorted_genome_bam.bam.bai
+# https://www.10xgenomics.com/datasets/3k-human-squamous-cell-lung-carcinoma-dtcs-chromium-x-2-standard
 axel https://cf.10xgenomics.com/samples/cell-vdj/7.0.1/SC5pv2_GEX_Human_Lung_Carcinoma_DTC/SC5pv2_GEX_Human_Lung_Carcinoma_DTC_possorted_genome_bam.bam
 axel https://cf.10xgenomics.com/samples/cell-vdj/7.0.1/SC5pv2_GEX_Human_Lung_Carcinoma_DTC/SC5pv2_GEX_Human_Lung_Carcinoma_DTC_possorted_genome_bam.bam.bai
 
