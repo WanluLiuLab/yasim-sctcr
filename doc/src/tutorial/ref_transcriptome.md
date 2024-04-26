@@ -1,9 +1,20 @@
 # Reproducibility Guide on Building References
 
 ```{note}
+Modern GNU/Linux is assumed for this tutorial. If you're working under Microsoft Windows, you may use [WSL](https://learn.microsoft.com/en-us/windows/wsl/).
+
 Basic knowledge on Shell programming, R (especially [Tidyverse](https://www.tidyverse.org/) series and [Seurat](https://satijalab.org/seurat/)) and Python are assumed for this tutorial.
 
 You should also know the basis of [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) and its [Python implementation](https://docs.python.org/3/library/re.html).
+```
+
+Before the analysis, download (using GNU WGet for example) and extract the following files:
+
+```shell
+wget https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
+wget https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz
+gunzip Homo_sapiens.GRCh38.cdna.all.fa.gz
+gunzip Homo_sapiens.GRCh38.pep.all.fa.gz
 ```
 
 ## Making the Reference Transcriptome
@@ -51,13 +62,11 @@ readr::write_tsv(selected_gene_trans, "ens.trans_gene_map.tsv", col_names=FALSE)
 
 **Generates:**
 
-- `ens.trans_gene_map.tsv`, which is a Tab-Separated Value (TSV) whose first column is Ensembl transcript ID and second column is HGNC symbol of corresponding gene. [Salmon](https://salmon.readthedocs.io/en/latest/index.html) could use this file to perform gene-level quantification.
+- `ens.trans_gene_map.tsv`, which is a Tab-Separated Value (TSV) whose first column is Ensembl transcript ID and second column is HGNC symbol of corresponding gene.
 
 Now we would download Ensembl transcript cDNAs and subset them to exclude unselected transcripts.
 
 ```shell
-wget https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
-gunzip Homo_sapiens.GRCh38.cdna.all.fa.gz
 # Use sektk to select selected transcripts.
 seqtk subseq \
     Homo_sapiens.GRCh38.cdna.all.fa \
@@ -76,9 +85,6 @@ The TCR cache is a **reusable** JSON containing TCR nucleotide to amino acid ali
 Before generating the TCR cache, we would download TCR sequences in cDNA and amino acid from Ensembl. The following code generates FASTA for peptides and cDNA sequences for TRAV/TRBV genes used in this simulator from Ensembl. The simulator uses data built from huARdb v1 which uses Ensembl 97 for reference, so we use this version in our tutorial.
 
 ```shell
-# The cDNA reference had already been downloaded.
-wget https://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz
-gunzip Homo_sapiens.GRCh38.pep.all.fa.gz
 for name in cdna pep; do
     seqkit grep \
         --by-name \

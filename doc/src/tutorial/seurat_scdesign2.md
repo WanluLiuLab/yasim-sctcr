@@ -3,17 +3,29 @@
 Although we can directly use raw scRNA-Seq count matrix, count-level scRNA-Seq simulators like [scDesign2](https://github.com/JSB-UCLA/scDesign2) could provide more flexible options in selecting genes, cell types, and generate any number of cells. Here we will use the [`HU_0043_Blood_10x`](http://husch.comp-genomics.org/#/detail/HU_0043_Blood_10x) data from [HUSCH](http://husch.comp-genomics.org/) database as example.
 
 ```{note}
-Basic knowledge on Shell programming and R (especially [Tidyverse](https://www.tidyverse.org/) series and [Seurat](https://satijalab.org/seurat/)) are assumed for this tutorial.
+This tutorial does not require GNU/Linux. You may execute it in anywhere with [R](https://www.r-project.org/) and reqired packages.
+
+Basic knowledge on R (especially [Tidyverse](https://www.tidyverse.org/) series and [Seurat](https://satijalab.org/seurat/)) are assumed for this tutorial.
 ```
 
 ## Downloading Raw Data
 
-We will firstly download its expression data and cell type annotations. Download the data using:
+We will firstly download its expression data and cell type annotations. For example, following code downloads the data using GNU WGet:
 
 ```shell
 wget https://biostorage.s3.ap-northeast-2.amazonaws.com/HUSCH/HUSCH_data/HU_0043_Blood_10x/HU_0043_Blood_10x_gene_count.h5
 wget https://biostorage.s3.ap-northeast-2.amazonaws.com/HUSCH/HUSCH_data/HU_0043_Blood_10x/HU_0043_Blood_10x_meta.txt
 ```
+
+````{tip}
+Also available through AWS CLI.
+
+```shell
+aws s3 cp --no-sign-request s3://biostorage/HUSCH/HUSCH_data/HU_0043_Blood_10x/HU_0043_Blood_10x_gene_count.h5 sample_gene_count.h5
+aws s3 cp --no-sign-request s3://biostorage/HUSCH/HUSCH_data/HU_0043_Blood_10x/HU_0043_Blood_10x_meta.txt sample_meta.txt
+```
+
+````
 
 Then read it into Seurat:
 

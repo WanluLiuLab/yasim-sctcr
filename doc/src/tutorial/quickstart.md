@@ -7,6 +7,8 @@
 Make sure you had correctly set up the environment as-is specified in {doc}`Readme </_root/Readme>`.
 
 ```{note}
+Modern GNU/Linux is assumed for this tutorial. If you're working under Microsoft Windows, you may use [WSL](https://learn.microsoft.com/en-us/windows/wsl/).
+
 Basic knowledge on Shell programming and Python are assumed for this tutorial.
 
 You should also know the basis of [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) and its [Python implementation](https://docs.python.org/3/library/re.html).
