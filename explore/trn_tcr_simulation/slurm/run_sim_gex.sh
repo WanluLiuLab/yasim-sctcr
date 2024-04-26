@@ -16,4 +16,12 @@ cd /slurm/home/yrd/liulab/yuzhejian/yasim-sctcr
 
 cd /slurm/home/yrd/liulab/yuzhejian/yasim-sctcr/explore/trn_tcr_simulation
 
+seqkit seq \
+    --seq-type DNA \
+    --validate-seq \
+    --reverse \
+    --complement \
+    <ref/ens.sel_genes.cdna.fa \
+    >ref/ens.sel_genes.cdna.rc.fa
+
 python scART.py

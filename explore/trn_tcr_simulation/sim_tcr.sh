@@ -65,6 +65,3 @@ for i in {0..2}; do
             -d 10
     done
 done
-
-# 1. No TCR clonal expansion, scRNA (1.0)+scTCR (depth=2, 4, 6, 8, 10, 20, 40, 60, 80, 100, len=150SE) + readLen (50, 100, 150, 250SE, TCR depth=400).
-# 2. (T-cell only) 100, 500, 1000 cells * 10 sample. Out: Clonal expansion in each sample. depth: scRNA: 0.8, scTCR: 10X

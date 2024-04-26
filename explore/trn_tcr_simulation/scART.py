@@ -12,7 +12,7 @@ from labw_utils.commonutils.stdlib_helper.shutil_helper import rm_rf
 
 ART_PATH = "/slurm/home/yrd/liulab/yuzhejian/art"
 ART_PROFILE_PATH = "/slurm/home/yrd/liulab/yuzhejian/Illumina_profiles"
-MANE_FA_PATH = "ref/ens.sel_genes.cdna.fa"
+MANE_FA_PATH = "ref/ens.sel_genes.cdna.rc.fa"
 MANE_MAPPING_PATH = "ref/ens.trans_gene_map.tsv"
 NJOBS = 40
 
@@ -108,5 +108,5 @@ def run_strategy_2():
 
 
 if __name__ == "__main__":
-    # run_strategy_1()
+    run_strategy_1()
     run_strategy_2()
