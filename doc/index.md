@@ -11,6 +11,7 @@ _root/Readme
 _cli_docs/index
 src/tutorial/index
 src/faq
+src/glossary
 _root/Copying
 src/license/index
 ```
