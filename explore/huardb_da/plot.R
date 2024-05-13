@@ -39,12 +39,23 @@ df_clonal <- df_pq %>%
     dplyr::arrange(n) %>%
     dplyr::mutate(rank=n() - 1:n()) %>%
     tibble::as_tibble()
-# p <- ggplot(df_clonal) +
-#     geom_point(aes(x=rank, y=n)) +
-#     scale_x_continuous(trans="log10") +
-#     scale_y_continuous(trans="log10") +
-#     theme_bw()
-# ggsave("clonal_zipf.png", p)
+p <- ggplot(df_clonal) +
+    geom_point(aes(x=rank, y=n)) +
+    scale_x_continuous(trans="log10") +
+    scale_y_continuous(trans="log10") +
+    theme_bw()
+ggsave("clonal_zipf.png", p)
+
+df_tra_b_diff <- df_pq %>%
+    dplyr::select(c(tra_umi, trb_umi)) %>%
+    tidyr::pivot_longer(cols=c(tra_umi, trb_umi), names_to = "chain")
+
+ggplot(df_tra_b_diff) +
+    geom_boxplot(aes(x=value, y=chain), outlier.alpha = 0) +
+    xlim(0, 50) +
+    theme_bw()
+
+wilcox.test(df_pq$tra_umi, df_pq$trb_umi, paired = TRUE)
 
 p <- ggplot(df_clonal) +
     geom_histogram(aes(x=n), bins = 400) +
