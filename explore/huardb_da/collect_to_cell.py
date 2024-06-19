@@ -18,7 +18,7 @@ def run(sample: str):
     flist = glob.glob(f"./pq/_Volumes_rsch_HuarcBackup_{sample}_all_contig_annotations.json.*.parquet")
     merged_lists = []
     for group_key, grouped_df in pd.read_parquet(
-        flist, columns=["chain", "v", "j", "sample_level_barcode", "nt"]
+        flist, columns=["chain", "v", "j", "sample_level_barcode", "nt", "umi_count"]
     ).groupby("sample_level_barcode"):
         grouped_df = grouped_df.sort_values(by=["chain"])
         if list(grouped_df["chain"]) != ["TRA", "TRB"]:
@@ -33,6 +33,8 @@ def run(sample: str):
                 "trbj": trb_chain.j,
                 "trbv": trb_chain.v,
                 "sample": sample,
+                "tra_umi": tra_chain.umi_count,
+                "trb_umi": trb_chain.umi_count,
                 "nt_blake2b": hashlib.blake2b(bytes(tra_chain.nt + "_" + trb_chain.nt, encoding="UTF-8")).hexdigest(),
             }
         )
