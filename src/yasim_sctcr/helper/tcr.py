@@ -184,7 +184,7 @@ class TCell(AbstractJSONSerializable):
     T-Cell representation.
 
     .. versionadded:: 0.1.0
-    .. versionchanged:: 0.1.1
+    .. versionchanged:: 1.0.0
          Supports non-productive TCR and TRC genes.
     """
 

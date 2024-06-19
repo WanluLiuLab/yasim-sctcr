@@ -14,9 +14,14 @@ Basic knowledge on Shell programming and Python are assumed for this tutorial.
 You should also know the basis of [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) and its [Python implementation](https://docs.python.org/3/library/re.html).
 ```
 
-Before simulation, you may download the reference data and simulated scRNA-Seq data from [Zenodo](TODO).
+Before simulation, you may download the reference data and simulated scRNA-Seq data from [Zenodo](https://doi.org/10.5281/zenodo.12155540), which contains the following files:
 
-## Step 1. Generating YASIM-sc Scaffold
+- `ens.trans_gene_map.tsv`, which is a Tab-Separated Value (TSV) whose first column is Ensembl transcript ID and second column is HGNC symbol of corresponding gene.
+- `ens.sel_genes.cdna.fa`, a FASTA of all selected transcripts that is considerably smaller than the original one.
+- `tcr_cache.json`, the generated TCR cache. User may not use this file.
+- `HU_0043_Blood_10x_sim.parquet`, the simulated scRNA-Seq count matrix.
+
+## Step 1. Generating Scaffold
 
 ```{note}
 **YASIM scRNA-Seq Format**
@@ -26,13 +31,12 @@ The scRNA-Seq data should be provided in a tabular format with one cell per colu
 We would recommend using [Apache Parquet](https://parquet.apache.org) format for faster I/O. However, it will need [arrow](https://cran.r-project.org/web/packages/arrow/index.html) R package and [pyarrow](https://pypi.org/project/pyarrow) Python package. If it is not possible, you may also write the data in TSV format.
 ```
 
-
 YASIM single cell scaffold allows clear representation of YASIM-generated files for paired scRNA-Seq and scTCR-Seq data from cell type annotated scRNA-Seq data. It would down-sample genes and normalize expression data. The scaffold for the sample selected above can be generated using the following command:
 
 ```shell
 python -m yasim_sctcr scaffold \
     --transcript_gene_mapping ref/ens.trans_gene_map.tsv \
-    --src_sc_data HU_0043_Blood_10x_sim.parquet \
+    --src_sc_data ref/HU_0043_Blood_10x_sim.parquet \
     --out HU_0043_Blood_10x_sim.sim.d \
     --t_cell_regex 'CD[48]T'
 ```
@@ -50,11 +54,6 @@ python -m yasim_sctcr scaffold \
 The simulation of scTCR-Seq data mainly includes genesis of TCR contig sequences, clonal expansion and invocation of LLRGs.
 
 ### Simulate Ground-Truth TCR Contigs
-
-Download the following real statistical data:
-
-- [cdr3_deletion_table.min.json.xz](../../../data/cdr3_deletion_table.min.json.xz): Human CDR3 deletion table.
-- [cdr3_insertion_table.min.json.xz](../../../data/cdr3_insertion_table.min.json.xz): Human CDR3 insertion table.
 
 This version of YASIM-scTCR separates generation of TCR clonotypes and TCR sequences for distinct T-cells, allowing the simulation of clonal expansion. To do this, the number of TCR contigs should be less than 1/2 T-cells. The following example generates 100 TCRs:
 
@@ -200,4 +199,3 @@ python -m yasim_sc art \
 Generates:
 
 - `HU_0043_Blood_10x/sim_notcr_50.d`: The target directory where reads generated from all cells is separated into single files.
-

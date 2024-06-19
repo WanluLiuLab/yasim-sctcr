@@ -1,7 +1,7 @@
 """
 convert_anndata -- Convert Scanpy AnnData object to TSV/Apache Parquet for ``scaffold``
 
-.. versionadded :: 0.1.1
+.. versionadded :: 1.0.0
 
 """
 

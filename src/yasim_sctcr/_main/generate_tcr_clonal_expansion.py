@@ -1,7 +1,7 @@
 """
 generate_tcr_clonal_expansion.py -- Generate ground-truth TCR Contigs
 
-.. versionadded:: 0.1.1
+.. versionadded:: 1.0.0
 """
 
 __all__ = ("main", "create_parser")
@@ -29,7 +29,7 @@ def create_parser() -> argparse.ArgumentParser:
     """
     TODO: docs
 
-    .. versionadded:: 0.1.1
+    .. versionadded:: 1.0.0
     """
     parser = ArgumentParserWithEnhancedFormatHelp(
         prog="python -m yasim_sctcr generate_tcr_clonal_expansion",
@@ -83,7 +83,7 @@ def main(args: List[str]):
     """
     TODO: docs
 
-    .. versionadded:: 0.1.1
+    .. versionadded:: 1.0.0
     """
     argv = create_parser().parse_args(args)
     df = pd.read_csv(argv.src_tcr_stats_tsv, sep="\t", quotechar="'")[["UUID", "ALPHA_NT", "BETA_NT"]]

@@ -2,7 +2,7 @@
 generate_tcr_cache.py -- Generation of TCR Cache.
 
 .. versionadded:: 0.1.0
-.. versionchanged:: 0.1.1
+.. versionchanged:: 1.0.0
     Generation of FASTA files removed.
 """
 
@@ -18,6 +18,7 @@ from labw_utils.commonutils.lwio.safe_io import get_writer
 from labw_utils.commonutils.stdlib_helper.argparse_helper import ArgumentParserWithEnhancedFormatHelp
 from labw_utils.commonutils.stdlib_helper.logger_helper import get_logger
 from labw_utils.typing_importer import List
+from src.yasim_sctcr import ZENODO_INDEX_URL
 from yasim_sctcr.helper.tcr import align
 
 _lh = get_logger(__name__)
@@ -36,13 +37,13 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--tcr_cdna_fa_path",
         required=True,
-        help="TCR cDNA FASTA path. The sequence name should conform TR[AB][VDJC].+ regular expression.",
+        help=f"TCR cDNA FASTA path. The sequence name should conform TR[AB][VDJC].+ regular expression. Extracted one from human is available at {ZENODO_INDEX_URL}.",
         type=str,
     )
     parser.add_argument(
         "--tcr_pep_fa_path",
         required=True,
-        help="TCR Peptide FASTA path. The sequence name should be same as `tcr_cdna_fa_path`.",
+        help=f"TCR Peptide FASTA path. The sequence name should be same as `tcr_cdna_fa_path`. Extracted one from human is available at {ZENODO_INDEX_URL}.",
         type=str,
     )
     parser.add_argument(

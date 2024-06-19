@@ -1,7 +1,7 @@
 """
 scaffold.py -- Generate paired scRNA-Seq and scTCR-Seq data from configuration files or options
 
-.. versionadded:: 0.1.1
+.. versionadded:: 1.0.0
 """
 
 import argparse
@@ -27,7 +27,7 @@ def create_parser() -> argparse.ArgumentParser:
     """
     TODO: docs
 
-    .. versionadded:: 0.1.1
+    .. versionadded:: 1.0.0
     """
     parser = ArgumentParserWithEnhancedFormatHelp(
         prog="python -m yasim_sctcr scaffold",

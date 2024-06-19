@@ -1,5 +1,7 @@
 # Reproducibility Guide on Building References
 
+This guide allows you to recreate the human reference published at our [Zenodo](https://doi.org/10.5281/zenodo.12155540) repository.
+
 ```{note}
 Modern GNU/Linux is assumed for this tutorial. If you're working under Microsoft Windows, you may use [WSL](https://learn.microsoft.com/en-us/windows/wsl/).
 

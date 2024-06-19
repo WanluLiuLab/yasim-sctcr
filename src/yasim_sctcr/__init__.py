@@ -4,7 +4,8 @@ yasim_sctcr -- Yet Another Single-Cell TCR-Seq Simulator
 .. versionadded:: 0.1.0
 """
 
-__version__ = "0.1.1"
+__version__ = "1.0.0"
+ZENODO_INDEX_URL = "ZENODO TODO" # TODO
 
 description = __doc__.splitlines()[1]
 

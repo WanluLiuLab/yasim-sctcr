@@ -17,14 +17,14 @@ This software provides an easy way to simulate Next-Generation Sequencing (NGS)-
 You need a working [Python](https://www.python.org) interpreter (CPython implementation) >= 3.8 (**recommended 3.9**) and the latest [`pip`](https://pip.pypa.io/) to install this software from [PYPI](https://pypi.org). Command:
 
 ```shell
-pip install yasim-sctcr==0.1.1
+pip install yasim-sctcr==1.0.0
 ```
 
 You are recommended to use this application inside a virtual environment like [`venv`](https://docs.python.org/3/library/venv.html), [`virtualenv`](https://virtualenv.pypa.io), [`pipenv`](https://pipenv.pypa.io), [`conda`](https://conda.io), or [`poetry`](https://python-poetry.org).
 
 ### Build from Source
 
-Before building from the source, get a copy of the latest source code from <https://github.com/WanluLiuLab/yasim> using [Git](https://git-scm.com):
+Before building from the source, get a copy of the latest source code from <https://github.com/WanluLiuLab/yasim-sctcr> using [Git](https://git-scm.com):
 
 ```shell
 git clone https://github.com/WanluLiuLab/yasim-sctcr
@@ -37,14 +37,14 @@ wget -o yasim-master.zip https://github.com/WanluLiuLab/yasim-sctcr/archive/refs
 unzip yasim-master.zip
 ```
 
-You need Python interpreter (CPython implementation) >= 3.7, latest PYPA [`build`](https://pypa-build.readthedocs.io), and [`setuptools`](https://setuptools.pypa.io/) to build this software. You are recommended to build the software in a virtual environment provided by [`virtualenv`](https://virtualenv.pypa.io), etc.
+You need Python interpreter (CPython implementation) >= 3.8, latest PYPA [`build`](https://pypa-build.readthedocs.io), and [`setuptools`](https://setuptools.pypa.io/) to build this software. You are recommended to build the software in a virtual environment provided by [`virtualenv`](https://virtualenv.pypa.io), etc.
 
 Build and install the simulator using:
 
 ```shell
 cd yasim-sctcr
 python3 -m build
-pip install dist/yasim-sctcr-0.1.0-py3-none-any.whl
+pip install dist/yasim-sctcr-1.0.0-py3-none-any.whl
 ```
 
 Apart from the above instructions, you should also install [ART](https://www.niehs.nih.gov/research/resources/software/biostatistics/art/index.cfm) which is a general-purpose NGS DNA-Seq simulator and is available from [Conda](https://anaconda.org/bioconda/art) and [APT](https://packages.debian.org/stable/art-nextgen-simulation-tools). Tested versions are `2.5.8 (June 6, 2016)`.
@@ -53,7 +53,7 @@ Apart from the above instructions, you should also install [ART](https://www.nie
 
 The initial release version is [0.1.0](https://pypi.org/project/yasim-sctcr/0.1.0/) at 2023/08/06.
 
-- 0.1.1: Addressed several problems proposed by the reviewers:
+- 1.0.0 (2024/06/12): Addressed several problems proposed by the reviewers:
   - Simulation for TRC gene added to `generate_tcr_cache` and `rearrange_tcr`.
   - Support the simulation of non-productive TCRs on a fixed ratio.
   - The scRNA-Seq simulator accepts outputs from other scNRA-Seq simulators.

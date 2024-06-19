@@ -1,6 +1,6 @@
 # Welcome to `yasim` Documentation
 
-This contains documentation for YASIM Users.
+This contains documentation for YASIM-scTCR Users.
 
 ```{toctree}
 :caption: 'Contents:'

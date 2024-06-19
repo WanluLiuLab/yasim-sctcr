@@ -54,7 +54,7 @@ so <- AddMetaData(
 
 ## Quality Control
 
-We assume that the gene symbols used by HUSCH are HGNC-compatible, and assume you've got `ens.trans_gene_map.tsv` as described in {doc}`Reproducibility Guide </src/tutorial/ref_transcriptome>`. For reduction of computation power and consistency across reference genomes, we will remove unknown or unselected genes:
+We assume that the gene symbols used by HUSCH are HGNC-compatible, and assume you've got `ens.trans_gene_map.tsv` from [Zenodo](https://doi.org/10.5281/zenodo.12155540). For reduction of computation power and consistency across reference genomes, we will remove unknown or unselected genes:
 
 ```r
 # Read HGNC genes retrived in previous steps

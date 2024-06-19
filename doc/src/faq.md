@@ -30,7 +30,7 @@
   | [GNU Wget](https://www.gnu.org/software/wget)                                                      | 1.21.4    |
   | [GNU Sed](https://www.gnu.org/software/sed)                                                        | 4.9       |
   | [yasim](https://pypi.org/project/yasim/)                                                           | 3.2.1     |
-  | [yasim\_sctcr](https://pypi.org/project/yasim-sctcr/)                                              | 0.1.1     |
+  | [yasim\_sctcr](https://pypi.org/project/yasim-sctcr/)                                              | 1.0.0     |
   | [art\_illumina](https://www.niehs.nih.gov/research/resources/software/biostatistics/art/index.cfm) | 2.5.8     |
   | [samtools](https://www.htslib.org)                                                                 | 1.13      |
   | [seqkit](https://bioinf.shenwei.me/seqkit)                                                         | 2.3.0     |
