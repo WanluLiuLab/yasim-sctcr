@@ -14,12 +14,19 @@ Basic knowledge on Shell programming and Python are assumed for this tutorial.
 You should also know the basis of [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) and its [Python implementation](https://docs.python.org/3/library/re.html).
 ```
 
-Before simulation, you may download the reference data and simulated scRNA-Seq data from [Zenodo](https://doi.org/10.5281/zenodo.12155540), which contains the following files:
+Before simulation, you may download the pre-built reference and simulated scRNA-Seq data of Humans from [Zenodo](https://doi.org/10.5281/zenodo.12513698), which contains the following files:
 
 - `ens.trans_gene_map.tsv`, which is a Tab-Separated Value (TSV) whose first column is Ensembl transcript ID and second column is HGNC symbol of corresponding gene.
 - `ens.sel_genes.cdna.fa`, a FASTA of all selected transcripts that is considerably smaller than the original one.
 - `tcr_cache.json`, the generated TCR cache. User may not use this file.
 - `HU_0043_Blood_10x_sim.parquet`, the simulated scRNA-Seq count matrix.
+- `usage_bias.json`: V/J usage bias for TCR sequences from huARdb.
+- `cdr3_deletion_table.json`: CDR3 deletion table from huARdb.
+- `cdr3_isertion_table.json`: CDR3 insertion table from huARdb.
+
+Note that some JSON files may be minified (with `.min` part). No special actions are required for those files.
+
+Note that some files may be compressed using XZ Utils (with `.xz`) suffix. Decompress them before proceeding.
 
 ## Step 1. Generating Scaffold
 
@@ -59,7 +66,7 @@ This version of YASIM-scTCR separates generation of TCR clonotypes and TCR seque
 
 ```shell
 python -m yasim_sctcr rearrange_tcr \
-    --tcr_cache_path tcr_cache.json \
+    --tcr_cache_path ref/tcr_cache.json \
     --cdr3_deletion_table_path cdr3_deletion_table.json \
     --cdr3_insertion_table_path cdr3_insertion_table.json \
     --usage_bias_json usage_bias.json \
@@ -71,7 +78,7 @@ You may also generate unexpanded T-cells (i.e., number of T-cells equals to numb
 
 ```shell
 python -m yasim_sctcr rearrange_tcr \
-    --tcr_cache_path tcr_cache.json \
+    --tcr_cache_path ref/tcr_cache.json \
     --cdr3_deletion_table_path cdr3_deletion_table.json \
     --cdr3_insertion_table_path cdr3_insertion_table.json \
     --usage_bias_json usage_bias.json \

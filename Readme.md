@@ -4,6 +4,8 @@
 
 ---
 
+![Workflow](workflow.svg)
+
 ## Introduction
 
 Single-Cel T-Cell Receptor (TCR) Sequencing (scTCR-Seq) is an important method in studying the diversity and dynamics of T-cell populations in organisms. However, since the number of publicly available scTCR-Seq datasets is limited, researchers often need to reconstruct TCR contigs from scRNA-Seq data, and a benchmark of such tools is required.

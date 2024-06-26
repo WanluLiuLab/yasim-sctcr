@@ -1,2 +1,2 @@
-include requirements.txt Readme.md
+include requirements.txt Readme.md workflow.svg
 include src/yasim_sctcr/_main/sample_data/*
